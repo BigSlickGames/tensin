@@ -31,14 +31,16 @@ class UIManager {
     menuContainer.className = 'menu-container';
     menuContainer.id = 'menu-container';
 
-    // Hero Banner
+    // Hero Banner with Profile
     const heroBanner = this.createHeroBanner();
     menuContainer.appendChild(heroBanner);
 
+    // Games Carousel
+    const gamesCarousel = this.createGamesCarousel();
+    menuContainer.appendChild(gamesCarousel);
+
     // User Sections
-    this.createExpandableSection(menuContainer, 'Player Profile', 'blue', '', this.createPlayerProfileContent());
     this.createExpandableSection(menuContainer, 'Daily Bonuses', 'orange', '', this.createDailyBonusesContent());
-    this.createExpandableSection(menuContainer, 'Games', 'green', '', this.createGamesContent());
     this.createExpandableSection(menuContainer, 'Forum', 'purple', '', this.createForumContent());
     this.createExpandableSection(menuContainer, 'Socials', 'pink', '', this.createSocialsContent());
 
@@ -173,19 +175,52 @@ class UIManager {
 
   createHeroBanner() {
     const user = window.AuthManager.getCurrentUser();
+    if (!user) return document.createElement('div');
+
+    const experience = user.experience || 0;
+    const level = user.level || 1;
+    const bankroll = user.bankroll || 0;
+
+    const xpForCurrentLevel = (level - 1) * 100;
+    const currentLevelXP = experience - xpForCurrentLevel;
+    const xpNeeded = 100;
+    const progressPercent = Math.min((currentLevelXP / xpNeeded) * 100, 100);
+
     const banner = document.createElement('div');
     banner.className = 'hero-banner';
     banner.innerHTML = `
-      <div class="hero-content">
-        <div class="hero-title">TENSINS WORLD OF APPS</div>
-        <div class="hero-subtitle">Welcome back, ${user?.first_name || 'Player'}!</div>
-      </div>
       <button
         onclick="window.AuthManager.signOut()"
-        style="position: absolute; top: 16px; right: 16px; padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer;"
+        style="position: absolute; top: 16px; right: 16px; padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer; z-index: 10;"
       >
         Sign Out
       </button>
+
+      <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 20px;">
+        <div style="width: 70px; height: 70px; background: var(--gradient-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; box-shadow: 0 8px 24px rgba(20, 184, 166, 0.4); border: 3px solid rgba(255, 255, 255, 0.2);">
+          ${user.first_name.charAt(0).toUpperCase()}
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 24px; font-weight: 900; margin-bottom: 4px; color: white;">
+            ${user.first_name} ${user.last_name || ''}
+          </div>
+          <div style="font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.7);">Level ${level}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Bankroll</div>
+          <div style="font-size: 24px; font-weight: 900; color: #fbbf24;">${bankroll.toLocaleString()}</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px;">XP Progress</span>
+          <span style="font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.9);">${currentLevelXP} / ${xpNeeded}</span>
+        </div>
+        <div style="position: relative; height: 10px; background: rgba(0,0,0,0.3); border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+          <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #14b8a6 0%, #3b82f6 100%); transition: width 0.5s ease; box-shadow: 0 0 12px rgba(20, 184, 166, 0.6);"></div>
+        </div>
+      </div>
     `;
     return banner;
   }
@@ -217,60 +252,59 @@ class UIManager {
     parent.appendChild(section);
   }
 
-  createPlayerProfileContent() {
-    const user = window.AuthManager.getCurrentUser();
-    if (!user) return '<div>Loading...</div>';
+  createGamesCarousel() {
+    const carousel = document.createElement('div');
+    carousel.style.cssText = 'margin: 0 0 20px 0; padding: 0 20px;';
 
-    const experience = user.experience || 0;
-    const level = user.level || 1;
-    const bankroll = user.bankroll || 0;
-
-    // Calculate XP progress within current level
-    const xpForCurrentLevel = (level - 1) * 100;
-    const xpForNextLevel = level * 100;
-    const currentLevelXP = experience - xpForCurrentLevel;
-    const xpNeeded = 100;
-    const progressPercent = Math.min((currentLevelXP / xpNeeded) * 100, 100);
-
-    return `
-      <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); padding: 24px; border-radius: var(--radius-xl); border: 2px solid var(--border-glow); margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
-          <div style="width: 90px; height: 90px; background: var(--gradient-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 900; box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3); border: 3px solid rgba(255, 255, 255, 0.1);">
-            ${user.first_name.charAt(0).toUpperCase()}
-          </div>
-          <div style="flex: 1;">
-            <div style="font-size: 26px; font-weight: 900; margin-bottom: 4px; background: var(--gradient-teal); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-              ${user.first_name} ${user.last_name || ''}
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 16px; font-weight: 700; color: var(--text-secondary);">Level ${level}</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Experience Progress</span>
-            <span style="font-size: 13px; font-weight: 800; color: var(--text-primary);">${currentLevelXP} / ${xpNeeded} XP</span>
-          </div>
-          <div style="position: relative; height: 14px; background: var(--bg-tertiary); border-radius: 999px; overflow: hidden; border: 2px solid var(--border-glow);">
-            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #14b8a6 0%, #3b82f6 100%); transition: width 0.5s ease; box-shadow: 0 0 12px rgba(20, 184, 166, 0.6);"></div>
-          </div>
-        </div>
-
-        <div style="background: var(--bg-secondary); padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border-glow);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Bankroll</div>
-              <div style="font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
-                ${bankroll.toLocaleString()}
-              </div>
-            </div>
-            <div style="font-size: 48px; opacity: 0.8;">💰</div>
-          </div>
+    carousel.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">Games & Apps</h3>
+      </div>
+      <div id="games-carousel-container" style="position: relative;">
+        <div id="games-carousel" style="display: flex; gap: 16px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 12px; -webkit-overflow-scrolling: touch; scrollbar-width: thin;">
+          ${this.createGameCards()}
         </div>
       </div>
     `;
+
+    return carousel;
+  }
+
+  createGameCards() {
+    const games = [
+      { id: 'memory-game', name: 'Memory Game', emoji: '🧠', color: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)' },
+      { id: 'reaction-game', name: 'Reaction Game', emoji: '⚡', color: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
+      { id: 'app-store', name: 'App Store', emoji: '🏪', color: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
+      { id: 'daily-challenge', name: 'Daily Challenge', emoji: '🎯', color: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)' },
+      { id: 'leaderboard', name: 'Leaderboard', emoji: '🏆', color: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' },
+    ];
+
+    return games.map(game => `
+      <div
+        onclick="window.ModuleLoader.loadModule('${game.id}')"
+        style="
+          min-width: 140px;
+          height: 160px;
+          background: ${game.color};
+          border-radius: var(--radius-lg);
+          padding: 20px;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+          border: 2px solid rgba(255,255,255,0.1);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+        "
+        onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.3)';"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';"
+      >
+        <div style="font-size: 48px; margin-bottom: 12px;">${game.emoji}</div>
+        <div style="font-size: 14px; font-weight: 800; color: white; line-height: 1.3;">${game.name}</div>
+      </div>
+    `).join('');
   }
 
   createDailyBonusesContent() {
