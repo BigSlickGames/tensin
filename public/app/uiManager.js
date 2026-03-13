@@ -278,13 +278,12 @@ class UIManager {
       { id: 'memory-game', name: 'Memory Game', emoji: '🧠', color: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)' },
       { id: 'reaction-game', name: 'Reaction Game', emoji: '⚡', color: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
       { id: 'app-store', name: 'App Store', emoji: '🏪', color: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
-      { id: 'daily-challenge', name: 'Daily Challenge', emoji: '🎯', color: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)' },
       { id: 'leaderboard', name: 'Leaderboard', emoji: '🏆', color: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' },
     ];
 
     return games.map(game => `
       <div
-        onclick="window.ModuleLoader.loadModule('${game.id}')"
+        onclick="window.UIManager.launchModule('${game.id}')"
         style="
           min-width: 140px;
           height: 160px;
@@ -315,7 +314,7 @@ class UIManager {
     button.style.cssText = 'margin: 20px; padding: 0;';
     button.innerHTML = `
       <button
-        onclick="window.ModuleLoader.loadModule('daily-challenge')"
+        onclick="window.UIManager.launchModule('daily-challenge')"
         style="
           width: 100%;
           padding: 20px;

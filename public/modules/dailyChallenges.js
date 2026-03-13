@@ -3,7 +3,7 @@ const dailyChallengesModule = {
   version: '1.0.0',
   description: 'Complete daily challenges to earn rewards',
 
-  async render(container) {
+  async start(container) {
     const user = window.AuthManager.getCurrentUser();
     if (!user) {
       container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Please sign in to view challenges</div>';
@@ -322,9 +322,9 @@ const dailyChallengesModule = {
         break;
       case 'beat':
         if (challengeId === 'memory-master') {
-          window.ModuleLoader.loadModule('memory-game');
+          window.UIManager.launchModule('memory-game');
         } else if (challengeId === 'reaction-pro') {
-          window.ModuleLoader.loadModule('reaction-game');
+          window.UIManager.launchModule('reaction-game');
         } else {
           window.UIManager.showMenu();
         }
@@ -374,12 +374,12 @@ const dailyChallengesModule = {
 
       const container = document.getElementById('module-container');
       if (container) {
-        await this.render(container);
+        await this.start(container);
       }
     }
   },
 
-  cleanup() {
+  stop() {
     // Cleanup if needed
   }
 };
