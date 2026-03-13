@@ -40,9 +40,12 @@ class UIManager {
     menuContainer.appendChild(gamesCarousel);
 
     // User Sections
-    this.createExpandableSection(menuContainer, 'Daily Bonuses', 'orange', '', this.createDailyBonusesContent());
     this.createExpandableSection(menuContainer, 'Forum', 'purple', '', this.createForumContent());
     this.createExpandableSection(menuContainer, 'Socials', 'pink', '', this.createSocialsContent());
+
+    // Daily Challenges Button
+    const challengesButton = this.createChallengesButton();
+    menuContainer.appendChild(challengesButton);
 
     container.appendChild(menuContainer);
 
@@ -307,49 +310,37 @@ class UIManager {
     `).join('');
   }
 
-  createDailyBonusesContent() {
-    return `
-      <div style="display: grid; gap: 16px;">
-        <div style="background: var(--bg-tertiary); padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border-glow);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Daily Login Bonus</div>
-              <div style="color: var(--text-secondary); font-size: 14px;">Come back tomorrow for more rewards!</div>
-            </div>
-            <div style="font-size: 36px;">🎁</div>
-          </div>
-          <button class="game-button" style="width: 100%; margin-top: 16px;">Claim 100 Coins</button>
-        </div>
-        <div style="background: var(--bg-tertiary); padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border-glow);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Daily Challenge</div>
-              <div style="color: var(--text-secondary); font-size: 14px;">Complete 3 games today</div>
-            </div>
-            <div style="font-size: 36px;">🎯</div>
-          </div>
-          <div style="margin-top: 16px; background: var(--bg-primary); padding: 12px; border-radius: var(--radius-md);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="font-size: 14px;">Progress</span>
-              <span style="font-weight: 800;">1/3</span>
-            </div>
-            <div style="height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden;">
-              <div style="width: 33%; height: 100%; background: var(--gradient-green); transition: width 0.3s;"></div>
-            </div>
-          </div>
-        </div>
-        <div style="background: var(--bg-tertiary); padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border-glow);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Streak Reward</div>
-              <div style="color: var(--text-secondary); font-size: 14px;">7 days in a row! 🔥</div>
-            </div>
-            <div style="font-size: 36px;">⚡</div>
-          </div>
-          <button class="game-button success" style="width: 100%; margin-top: 16px;">Claim 500 Coins</button>
-        </div>
-      </div>
+  createChallengesButton() {
+    const button = document.createElement('div');
+    button.style.cssText = 'margin: 20px; padding: 0;';
+    button.innerHTML = `
+      <button
+        onclick="window.ModuleLoader.loadModule('daily-challenge')"
+        style="
+          width: 100%;
+          padding: 20px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border: 2px solid rgba(255,255,255,0.2);
+          border-radius: var(--radius-lg);
+          color: white;
+          font-size: 18px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+        "
+        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(245, 158, 11, 0.5)';"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.3)';"
+      >
+        <span style="font-size: 24px;">🎯</span>
+        <span>Daily Challenges</span>
+      </button>
     `;
+    return button;
   }
 
   createGamesContent() {
