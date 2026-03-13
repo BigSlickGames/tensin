@@ -82,7 +82,7 @@ class UIManager {
     banner.className = 'hero-banner';
     banner.innerHTML = `
       <div class="hero-content">
-        <div class="hero-title">BIG SLICK GAMES</div>
+        <div class="hero-title">TENSINS WORLD OF APPS</div>
         <div class="hero-subtitle">Your Gaming Universe</div>
       </div>
     `;
