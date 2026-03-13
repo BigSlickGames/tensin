@@ -35,29 +35,47 @@
 
         .hero-banner {
           margin: 0 0 24px;
-          background: white;
-          padding: 40px 20px 32px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 48px 20px 40px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero-banner::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
+          pointer-events: none;
         }
 
         .hero-content {
           max-width: 1200px;
           margin: 0 auto;
           text-align: center;
+          position: relative;
+          z-index: 1;
         }
 
         .hero-logo {
           font-size: 40px;
           font-weight: 700;
-          color: #1d1d1f;
+          color: white;
           letter-spacing: -0.02em;
           margin-bottom: 8px;
+          text-shadow: 0 2px 12px rgba(0,0,0,0.15);
         }
 
         .hero-subtitle {
           font-size: 16px;
-          color: #6e6e73;
+          color: rgba(255,255,255,0.9);
           font-weight: 400;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
 
         .apps-section {
@@ -164,7 +182,7 @@
       <div class="app-store-root" data-element="root">
         <div class="hero-banner">
           <div class="hero-content">
-            <div class="hero-logo">TENSINS APP WORLD</div>
+            <div class="hero-logo">TENSINS WORLD OF APPS</div>
             <div class="hero-subtitle">Discover Amazing Apps</div>
           </div>
         </div>
