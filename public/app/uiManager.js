@@ -35,16 +35,6 @@ class UIManager {
     this.createExpandableSection(menuContainer, 'Forum', 'purple', '💬', this.createForumContent());
     this.createExpandableSection(menuContainer, 'Socials', 'pink', '✨', this.createSocialsContent());
 
-    // Admin link at bottom
-    const adminLink = document.createElement('div');
-    adminLink.style.cssText = 'margin-top: 32px; padding: 24px; text-align: center; border-top: 2px solid var(--border-subtle);';
-    adminLink.innerHTML = `
-      <button class="launch-button" onclick="window.UIManager.showAdminPanel()" style="opacity: 0.7;">
-        ⚙️ Admin Panel
-      </button>
-    `;
-    menuContainer.appendChild(adminLink);
-
     container.appendChild(menuContainer);
 
     // Module Container (hidden by default)
