@@ -5,8 +5,8 @@ class AuthManager {
   }
 
   async initialize() {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const supabaseUrl = window.ENV?.VITE_SUPABASE_URL;
+    const supabaseKey = window.ENV?.VITE_SUPABASE_ANON_KEY;
 
     if (supabaseUrl && supabaseKey && typeof supabase !== 'undefined') {
       this.supabase = supabase.createClient(supabaseUrl, supabaseKey);
