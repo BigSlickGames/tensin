@@ -71,7 +71,7 @@ class UIManager {
 
     const title = document.createElement('div');
     title.className = 'app-title';
-    title.textContent = 'Mini App Hub';
+    title.textContent = '';
     header.appendChild(title);
 
     return header;
@@ -372,7 +372,7 @@ class UIManager {
     menuContainer.style.display = 'block';
     moduleContainer.style.display = 'none';
     backButton.style.display = 'none';
-    appTitle.textContent = 'Mini App Hub';
+    appTitle.textContent = '';
   }
 
   refresh() {
