@@ -44,7 +44,8 @@ class App {
       '/modules/shareTest.js',
       '/modules/analyticsViewer.js',
       '/modules/adminDashboard.js',
-      '/modules/moduleGeneratorUI.js'
+      '/modules/moduleGeneratorUI.js',
+      '/modules/dailyChallenges.js'
     ];
 
     const loadPromises = moduleScripts.map(src => {

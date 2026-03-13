@@ -1,5 +1,8 @@
 const dailyChallengesModule = {
+  id: 'daily-challenge',
   name: 'Daily Challenges',
+  icon: '🎯',
+  type: 'tool',
   version: '1.0.0',
   description: 'Complete daily challenges to earn rewards',
 
@@ -384,4 +387,4 @@ const dailyChallengesModule = {
   }
 };
 
-window.ModuleRegistry.register('daily-challenge', dailyChallengesModule);
+window.ModuleRegistry.register(dailyChallengesModule);
