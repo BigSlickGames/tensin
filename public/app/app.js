@@ -21,7 +21,7 @@ class App {
       await window.DailyChallengeManager.initialize();
     }
 
-    window.UIManager.init();
+    await window.UIManager.init();
 
     this.initialized = true;
 

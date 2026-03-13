@@ -16,18 +16,20 @@ class AuthManager {
         await this.loadUserProfile(session.user.id);
       }
 
-      this.supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          await this.loadUserProfile(session.user.id);
-          if (window.UIManager) {
-            window.UIManager.refresh();
+      this.supabase.auth.onAuthStateChange((event, session) => {
+        (async () => {
+          if (event === 'SIGNED_IN' && session) {
+            await this.loadUserProfile(session.user.id);
+            if (window.UIManager) {
+              window.UIManager.refresh();
+            }
+          } else if (event === 'SIGNED_OUT') {
+            this.currentUser = null;
+            if (window.UIManager) {
+              window.UIManager.refresh();
+            }
           }
-        } else if (event === 'SIGNED_OUT') {
-          this.currentUser = null;
-          if (window.UIManager) {
-            window.UIManager.refresh();
-          }
-        }
+        })();
       });
     }
   }
