@@ -221,42 +221,53 @@ class UIManager {
     const user = window.AuthManager.getCurrentUser();
     if (!user) return '<div>Loading...</div>';
 
-    const achievements = user.achievements || [];
-    const achievementEmojis = ['🏆', '⚡', '🎯', '💎', '🔥'];
+    const experience = user.experience || 0;
+    const level = user.level || 1;
+    const bankroll = user.bankroll || 0;
+
+    // Calculate XP progress within current level
+    const xpForCurrentLevel = (level - 1) * 100;
+    const xpForNextLevel = level * 100;
+    const currentLevelXP = experience - xpForCurrentLevel;
+    const xpNeeded = 100;
+    const progressPercent = Math.min((currentLevelXP / xpNeeded) * 100, 100);
 
     return `
-      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 80px; height: 80px; background: var(--gradient-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; box-shadow: var(--shadow-lg);">
-          ${user.first_name.charAt(0).toUpperCase()}
+      <div style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); padding: 24px; border-radius: var(--radius-xl); border: 2px solid var(--border-glow); margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
+          <div style="width: 90px; height: 90px; background: var(--gradient-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 900; box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3); border: 3px solid rgba(255, 255, 255, 0.1);">
+            ${user.first_name.charAt(0).toUpperCase()}
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 26px; font-weight: 900; margin-bottom: 4px; background: var(--gradient-teal); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              ${user.first_name} ${user.last_name || ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 16px; font-weight: 700; color: var(--text-secondary);">Level ${level}</span>
+            </div>
+          </div>
         </div>
-        <div style="flex: 1;">
-          <div style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">${user.first_name} ${user.last_name || ''}</div>
-          <div style="color: var(--text-secondary); font-size: 14px;">Level ${user.level} Player</div>
+
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Experience Progress</span>
+            <span style="font-size: 13px; font-weight: 800; color: var(--text-primary);">${currentLevelXP} / ${xpNeeded} XP</span>
+          </div>
+          <div style="position: relative; height: 14px; background: var(--bg-tertiary); border-radius: 999px; overflow: hidden; border: 2px solid var(--border-glow);">
+            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #14b8a6 0%, #3b82f6 100%); transition: width 0.5s ease; box-shadow: 0 0 12px rgba(20, 184, 166, 0.6);"></div>
+          </div>
         </div>
-      </div>
-      <div class="game-stats" style="justify-content: flex-start;">
-        <div class="stat-item">
-          <div class="stat-label">Score</div>
-          <div class="stat-value">${user.total_score.toLocaleString()}</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Wins</div>
-          <div class="stat-value">${user.total_wins}</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Rank</div>
-          <div class="stat-value">${user.rank > 0 ? '#' + user.rank : 'N/A'}</div>
-        </div>
-      </div>
-      <div style="margin-top: 24px;">
-        <h4 style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Achievements</h4>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-          ${achievements.length > 0 ?
-            achievements.slice(0, 5).map((_, i) => `
-              <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">${achievementEmojis[i] || '🎮'}</div>
-            `).join('') :
-            `<div style="color: var(--text-tertiary); font-size: 14px; padding: 12px 0;">No achievements yet. Start playing to earn some!</div>`
-          }
+
+        <div style="background: var(--bg-secondary); padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border-glow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Bankroll</div>
+              <div style="font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
+                ${bankroll.toLocaleString()}
+              </div>
+            </div>
+            <div style="font-size: 48px; opacity: 0.8;">💰</div>
+          </div>
         </div>
       </div>
     `;

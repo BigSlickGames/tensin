@@ -89,6 +89,8 @@ class AuthManager {
             first_name: firstName,
             last_name: lastName,
             level: 1,
+            experience: 0,
+            bankroll: 1000,
             total_score: 0,
             total_wins: 0,
             rank: 0,
