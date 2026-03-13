@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Mini App Hub</title>
+    <meta name="description" content="Modular web application platform for games and utilities" />
+    <meta property="og:title" content="Mini App Hub" />
+    <meta property="og:description" content="Modular web application platform" />
+    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link rel="stylesheet" href="/styles/master.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="/app/moduleRegistry.js"></script>
+    <script src="/app/moduleLoader.js"></script>
+    <script src="/app/uiManager.js"></script>
+    <script src="/app/telegramAdapter.js"></script>
+    <script src="/app/supabaseClient.js"></script>
+    <script src="/app/shareManager.js"></script>
+    <script src="/app/analytics.js"></script>
+    <script src="/app/leaderboardManager.js"></script>
+    <script src="/app/dailyChallengeManager.js"></script>
+    <script src="/app/moduleGenerator.js"></script>
+    <script src="/app/appStoreManager.js"></script>
+    <script src="/app/app.js"></script>
+
+    <script src="/modules/memoryGame.js"></script>
+    <script src="/modules/reactionGame.js"></script>
+    <script src="/modules/appStore.js"></script>
+    <script src="/modules/adminPanel.js"></script>
+  </body>
+</html>
