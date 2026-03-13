@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Setup Test Users</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Setting up test users...</h1>
+  <div id="status"></div>
+
+  <script type="module">
+    const SUPABASE_URL = 'https://ezenrsowgzktjkabvalm.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZW5yc293Z3prdGprYWJ2YWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTIwNjcsImV4cCI6MjA4ODk4ODA2N30.rP_cpA-oNHiqFE13pYOf9v3LoRD7E_6JqfxVuVBe1D4';
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const users = [
+      { username: 'john', password: 'tensin26', firstName: 'John', lastName: 'Doe' },
+      { username: 'jenny', password: 'tensin26', firstName: 'Jenny', lastName: 'Smith' },
+      { username: 'jack', password: 'tensin26', firstName: 'Jack', lastName: 'Johnson' }
+    ];
+
+    const statusDiv = document.getElementById('status');
+
+    async function setupUsers() {
+      for (const user of users) {
+        try {
+          statusDiv.innerHTML += `<p>Creating user: ${user.username}...</p>`;
+
+          const email = `${user.username}@tensins.local`;
+
+          const { data: authData, error: authError } = await client.auth.signUp({
+            email,
+            password: user.password,
+            options: {
+              data: {
+                username: user.username,
+                first_name: user.firstName,
+                last_name: user.lastName
+              }
+            }
+          });
+
+          if (authError) {
+            if (authError.message.includes('already registered')) {
+              statusDiv.innerHTML += `<p style="color: orange;">User ${user.username} already exists, skipping...</p>`;
+              continue;
+            }
+            throw authError;
+          }
+
+          if (authData.user) {
+            statusDiv.innerHTML += `<p style="color: blue;">Created auth user: ${user.username}</p>`;
+
+            await client.auth.signOut();
+
+            const adminClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const { error: profileError } = await adminClient
+              .from('user_profiles')
+              .insert({
+                id: authData.user.id,
+                username: user.username,
+                first_name: user.firstName,
+                last_name: user.lastName,
+                level: 1,
+                total_score: 0,
+                total_wins: 0,
+                rank: 0,
+                achievements: []
+              });
+
+            if (profileError && !profileError.message.includes('duplicate')) {
+              statusDiv.innerHTML += `<p style="color: red;">Error creating profile for ${user.username}: ${profileError.message}</p>`;
+            } else {
+              statusDiv.innerHTML += `<p style="color: green;">✓ Created profile for ${user.username}</p>`;
+            }
+          }
+        } catch (error) {
+          statusDiv.innerHTML += `<p style="color: red;">Error with ${user.username}: ${error.message}</p>`;
+        }
+      }
+
+      statusDiv.innerHTML += '<h2 style="color: green;">Setup complete!</h2>';
+      statusDiv.innerHTML += '<p>You can now close this page and refresh the main app.</p>';
+    }
+
+    setupUsers();
+  </script>
+</body>
+</html>

@@ -4,7 +4,8 @@ class UIManager {
     this.isMenuVisible = true;
   }
 
-  init() {
+  async init() {
+    await window.AuthManager.initialize();
     this.createUserCenteredView();
   }
 
@@ -14,6 +15,12 @@ class UIManager {
 
     const container = document.createElement('div');
     container.className = 'app-container';
+
+    if (!window.AuthManager.isAuthenticated()) {
+      container.appendChild(this.createLoginView());
+      root.appendChild(container);
+      return;
+    }
 
     // Header
     const header = this.createHeader();
@@ -29,11 +36,11 @@ class UIManager {
     menuContainer.appendChild(heroBanner);
 
     // User Sections
-    this.createExpandableSection(menuContainer, 'Player Profile', 'blue', '👤', this.createPlayerProfileContent());
-    this.createExpandableSection(menuContainer, 'Daily Bonuses', 'orange', '🎁', this.createDailyBonusesContent());
-    this.createExpandableSection(menuContainer, 'Games', 'green', '🎮', this.createGamesContent());
-    this.createExpandableSection(menuContainer, 'Forum', 'purple', '💬', this.createForumContent());
-    this.createExpandableSection(menuContainer, 'Socials', 'pink', '✨', this.createSocialsContent());
+    this.createExpandableSection(menuContainer, 'Player Profile', 'blue', '', this.createPlayerProfileContent());
+    this.createExpandableSection(menuContainer, 'Daily Bonuses', 'orange', '', this.createDailyBonusesContent());
+    this.createExpandableSection(menuContainer, 'Games', 'green', '', this.createGamesContent());
+    this.createExpandableSection(menuContainer, 'Forum', 'purple', '', this.createForumContent());
+    this.createExpandableSection(menuContainer, 'Socials', 'pink', '', this.createSocialsContent());
 
     container.appendChild(menuContainer);
 
@@ -67,14 +74,118 @@ class UIManager {
     return header;
   }
 
+  createLoginView() {
+    const loginContainer = document.createElement('div');
+    loginContainer.style.cssText = 'min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;';
+
+    loginContainer.innerHTML = `
+      <div style="width: 100%; max-width: 400px; background: var(--bg-secondary); padding: 40px; border-radius: var(--radius-xl); border: 2px solid var(--border-glow); box-shadow: var(--shadow-lg);">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <div style="font-size: 32px; font-weight: 900; background: var(--gradient-teal); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;">
+            TENSINS WORLD
+          </div>
+          <div style="color: var(--text-secondary);">Sign in to continue</div>
+        </div>
+
+        <div style="display: grid; gap: 16px;">
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Username</label>
+            <input
+              type="text"
+              id="login-username"
+              placeholder="Enter username"
+              style="width: 100%; padding: 12px; background: var(--bg-tertiary); border: 2px solid var(--border-glow); border-radius: var(--radius-md); color: var(--text-primary); font-size: 16px;"
+            />
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              placeholder="Enter password"
+              style="width: 100%; padding: 12px; background: var(--bg-tertiary); border: 2px solid var(--border-glow); border-radius: var(--radius-md); color: var(--text-primary); font-size: 16px;"
+            />
+          </div>
+
+          <div id="login-error" style="display: none; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); border-radius: var(--radius-md); color: #ef4444; font-size: 14px;"></div>
+
+          <button
+            id="login-button"
+            class="launch-button"
+            style="width: 100%; padding: 14px; font-size: 16px; font-weight: 800;"
+          >
+            Sign In
+          </button>
+
+          <div style="text-align: center; color: var(--text-tertiary); font-size: 14px; margin-top: 8px;">
+            Test accounts: john, jenny, jack<br>Password: tensin26
+          </div>
+        </div>
+      </div>
+    `;
+
+    setTimeout(() => {
+      const loginButton = document.getElementById('login-button');
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const errorDiv = document.getElementById('login-error');
+
+      const handleLogin = async () => {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+          errorDiv.textContent = 'Please enter username and password';
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        loginButton.textContent = 'Signing in...';
+        loginButton.disabled = true;
+        errorDiv.style.display = 'none';
+
+        const result = await window.AuthManager.signIn(username, password);
+
+        if (result.success) {
+          this.refresh();
+        } else {
+          errorDiv.textContent = result.error || 'Invalid credentials';
+          errorDiv.style.display = 'block';
+          loginButton.textContent = 'Sign In';
+          loginButton.disabled = false;
+        }
+      };
+
+      loginButton.onclick = handleLogin;
+
+      usernameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+      });
+
+      passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+      });
+    }, 0);
+
+    return loginContainer;
+  }
+
   createHeroBanner() {
+    const user = window.AuthManager.getCurrentUser();
     const banner = document.createElement('div');
     banner.className = 'hero-banner';
     banner.innerHTML = `
       <div class="hero-content">
         <div class="hero-title">TENSINS WORLD OF APPS</div>
-        <div class="hero-subtitle">Your Gaming Universe</div>
+        <div class="hero-subtitle">Welcome back, ${user?.first_name || 'Player'}!</div>
       </div>
+      <button
+        onclick="window.AuthManager.signOut()"
+        style="position: absolute; top: 16px; right: 16px; padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer;"
+      >
+        Sign Out
+      </button>
     `;
     return banner;
   }
@@ -86,7 +197,7 @@ class UIManager {
     const header = document.createElement('div');
     header.className = `expandable-header ${colorClass}`;
     header.innerHTML = `
-      <div class="expandable-title">${icon} ${title}</div>
+      <div class="expandable-title">${title}</div>
       <div class="expandable-icon">▼</div>
     `;
 
@@ -107,7 +218,12 @@ class UIManager {
   }
 
   createPlayerProfileContent() {
-    const user = window.TelegramAdapter.getUser();
+    const user = window.AuthManager.getCurrentUser();
+    if (!user) return '<div>Loading...</div>';
+
+    const achievements = user.achievements || [];
+    const achievementEmojis = ['🏆', '⚡', '🎯', '💎', '🔥'];
+
     return `
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
         <div style="width: 80px; height: 80px; background: var(--gradient-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; box-shadow: var(--shadow-lg);">
@@ -115,31 +231,32 @@ class UIManager {
         </div>
         <div style="flex: 1;">
           <div style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">${user.first_name} ${user.last_name || ''}</div>
-          <div style="color: var(--text-secondary); font-size: 14px;">Level 5 Player</div>
+          <div style="color: var(--text-secondary); font-size: 14px;">Level ${user.level} Player</div>
         </div>
       </div>
       <div class="game-stats" style="justify-content: flex-start;">
         <div class="stat-item">
           <div class="stat-label">Score</div>
-          <div class="stat-value">1,234</div>
+          <div class="stat-value">${user.total_score.toLocaleString()}</div>
         </div>
         <div class="stat-item">
           <div class="stat-label">Wins</div>
-          <div class="stat-value">42</div>
+          <div class="stat-value">${user.total_wins}</div>
         </div>
         <div class="stat-item">
           <div class="stat-label">Rank</div>
-          <div class="stat-value">#15</div>
+          <div class="stat-value">${user.rank > 0 ? '#' + user.rank : 'N/A'}</div>
         </div>
       </div>
       <div style="margin-top: 24px;">
         <h4 style="font-size: 14px; color: var(--text-tertiary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Achievements</h4>
         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">🏆</div>
-          <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">⚡</div>
-          <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">🎯</div>
-          <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">💎</div>
-          <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">🔥</div>
+          ${achievements.length > 0 ?
+            achievements.slice(0, 5).map((_, i) => `
+              <div style="background: var(--bg-tertiary); padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-glow); font-size: 20px;">${achievementEmojis[i] || '🎮'}</div>
+            `).join('') :
+            `<div style="color: var(--text-tertiary); font-size: 14px; padding: 12px 0;">No achievements yet. Start playing to earn some!</div>`
+          }
         </div>
       </div>
     `;
