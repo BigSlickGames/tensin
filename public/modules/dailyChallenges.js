@@ -13,8 +13,8 @@ const dailyChallengesModule = {
       return;
     }
 
-    const challenges = await this.getChallenges();
-    this.currentFilter = this.currentFilter || 'all';
+    const challenges = await dailyChallengesModule.getChallenges();
+    dailyChallengesModule.currentFilter = dailyChallengesModule.currentFilter || 'all';
 
     const experience = user.experience || 0;
     const level = user.level || 1;
@@ -34,9 +34,9 @@ const dailyChallengesModule = {
       { id: 'progression', name: 'Progress', icon: '📈' }
     ];
 
-    const filteredChallenges = this.currentFilter === 'all'
+    const filteredChallenges = dailyChallengesModule.currentFilter === 'all'
       ? challenges
-      : challenges.filter(c => c.category === this.currentFilter);
+      : challenges.filter(c => c.category === dailyChallengesModule.currentFilter);
 
     const completedCount = challenges.filter(c => c.completed).length;
     const totalChallenges = challenges.length;
@@ -95,8 +95,8 @@ const dailyChallengesModule = {
                 data-category="${cat.id}"
                 style="
                   padding: 10px 20px;
-                  background: ${this.currentFilter === cat.id ? 'var(--border-glow)' : 'var(--bg-secondary)'};
-                  border: 2px solid ${this.currentFilter === cat.id ? 'var(--border-glow)' : 'var(--border-subtle)'};
+                  background: ${dailyChallengesModule.currentFilter === cat.id ? 'var(--border-glow)' : 'var(--bg-secondary)'};
+                  border: 2px solid ${dailyChallengesModule.currentFilter === cat.id ? 'var(--border-glow)' : 'var(--border-subtle)'};
                   border-radius: var(--radius-md);
                   color: var(--text-primary);
                   font-size: 14px;
@@ -106,8 +106,8 @@ const dailyChallengesModule = {
                   transition: all 0.2s;
                   flex-shrink: 0;
                 "
-                onmouseover="if(this.dataset.category !== '${this.currentFilter}') { this.style.background='var(--bg-tertiary)'; this.style.borderColor='var(--border-glow)'; }"
-                onmouseout="if(this.dataset.category !== '${this.currentFilter}') { this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--border-subtle)'; }"
+                onmouseover="if(this.dataset.category !== '${dailyChallengesModule.currentFilter}') { this.style.background='var(--bg-tertiary)'; this.style.borderColor='var(--border-glow)'; }"
+                onmouseout="if(this.dataset.category !== '${dailyChallengesModule.currentFilter}') { this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--border-subtle)'; }"
               >
                 ${cat.icon} ${cat.name}
               </button>
@@ -116,7 +116,7 @@ const dailyChallengesModule = {
 
           <div style="display: grid; gap: 20px;">
             ${filteredChallenges.length > 0
-              ? filteredChallenges.map(challenge => this.renderChallengeCard(challenge, user)).join('')
+              ? filteredChallenges.map(challenge => dailyChallengesModule.renderChallengeCard(challenge, user)).join('')
               : '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">No challenges in this category yet.</div>'
             }
           </div>
@@ -124,7 +124,7 @@ const dailyChallengesModule = {
       </div>
     `;
 
-    this.attachEventListeners();
+    dailyChallengesModule.attachEventListeners();
   },
 
   async getChallenges() {
@@ -663,7 +663,7 @@ const dailyChallengesModule = {
             onmouseover="this.style.opacity='0.9'; this.style.transform='scale(0.98)';"
             onmouseout="this.style.opacity='1'; this.style.transform='scale(1)';"
           >
-            ${this.getActionButtonText(challenge.type)}
+            ${dailyChallengesModule.getActionButtonText(challenge.type)}
           </button>
         ` : `
           <div style="
@@ -689,7 +689,8 @@ const dailyChallengesModule = {
       'beat': 'Start Challenge',
       'share': 'Share Now',
       'invite': 'Invite Friends',
-      'post': 'Go to Forum'
+      'post': 'Go to Forum',
+      'streak': 'Continue Streak'
     };
     return buttonTexts[type] || 'Start';
   },
@@ -700,17 +701,17 @@ const dailyChallengesModule = {
       button.addEventListener('click', async (e) => {
         const challengeId = e.target.dataset.challengeId;
         const challengeType = e.target.dataset.challengeType;
-        await this.handleChallengeAction(challengeType, challengeId);
+        await dailyChallengesModule.handleChallengeAction(challengeType, challengeId);
       });
     });
 
     const filterButtons = document.querySelectorAll('.category-filter-btn');
     filterButtons.forEach(button => {
       button.addEventListener('click', async (e) => {
-        this.currentFilter = e.target.dataset.category;
+        dailyChallengesModule.currentFilter = e.target.dataset.category;
         const container = document.getElementById('module-container');
         if (container) {
-          await this.start(container);
+          await dailyChallengesModule.start(container);
         }
       });
     });
@@ -756,7 +757,7 @@ const dailyChallengesModule = {
     const user = window.AuthManager.getCurrentUser();
     if (!user || !window.supabase) return;
 
-    const challenges = await this.getChallenges();
+    const challenges = await dailyChallengesModule.getChallenges();
     const challenge = challenges.find(c => c.id === challengeId);
 
     if (!challenge || challenge.completed) return;
@@ -803,7 +804,7 @@ const dailyChallengesModule = {
 
       const container = document.getElementById('module-container');
       if (container) {
-        await this.start(container);
+        await dailyChallengesModule.start(container);
       }
     }
   },
