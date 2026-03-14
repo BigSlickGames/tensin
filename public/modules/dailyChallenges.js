@@ -27,7 +27,7 @@ const dailyChallengesModule = {
       <div style="min-height: 100vh; background: var(--bg-primary);">
         <div style="
           position: relative;
-          background: url('/grok-image-d173b47c-e0c9-4ada-ba50-c76d4cbe224e.png') center/cover;
+          background: url('/bd784273-048d-46b7-9ce9-6a2ee14880bf_(1).jpg') center/cover;
           padding: 40px 20px;
           border-bottom: 3px solid var(--border-glow);
         ">
@@ -229,11 +229,11 @@ const dailyChallengesModule = {
     ];
 
     try {
-      const { data: progressData } = await window.SupabaseClient.client
+      const { data: progressData } = await window.supabase
         .from('user_challenge_progress')
         .select('*')
         .eq('user_id', user.id)
-        .eq('challenge_date', today);
+        .eq('reset_at', today);
 
       if (progressData) {
         progressData.forEach(progress => {
