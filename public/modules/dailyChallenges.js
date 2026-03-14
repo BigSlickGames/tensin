@@ -47,7 +47,9 @@ const dailyChallengesModule = {
         icon: '🎁',
         reward: { xp: 50, bankroll: 100 },
         color: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-        target: 1
+        progress: 1,
+        target: 1,
+        completed: true
       },
       {
         id: 'play-3-games',
@@ -57,7 +59,7 @@ const dailyChallengesModule = {
         icon: '🎮',
         reward: { xp: 100, bankroll: 200 },
         color: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        progress: 1,
+        progress: 0,
         target: 3,
         completed: false
       },
@@ -182,6 +184,28 @@ const dailyChallengesModule = {
         completed: false
       }
     ];
+
+    try {
+      const { data: progressData } = await window.SupabaseClient.client
+        .from('user_challenge_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('challenge_date', today);
+
+      if (progressData) {
+        progressData.forEach(progress => {
+          const challenge = challengeTemplates.find(c => c.id === progress.challenge_id);
+          if (challenge) {
+            challenge.progress = progress.progress;
+            challenge.completed = progress.completed;
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading challenge progress:', error);
+    }
+
+    return challengeTemplates;
   },
 
   renderChallengeCard(challenge, user) {

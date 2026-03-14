@@ -39,9 +39,9 @@ class UIManager {
     const gamesCarousel = this.createGamesCarousel();
     menuContainer.appendChild(gamesCarousel);
 
-    // Daily Challenges Section
-    const challengesSection = this.createDailyChallengesSection();
-    menuContainer.appendChild(challengesSection);
+    // Daily Challenges Button
+    const challengesButton = this.createChallengesButton();
+    menuContainer.appendChild(challengesButton);
 
     // User Sections
     this.createExpandableSection(menuContainer, 'Forum', 'purple', '', this.createForumContent());
