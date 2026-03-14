@@ -24,11 +24,11 @@ const leaderboardModule = {
           <span style="font-size: 16px; margin-bottom: 2px;">🌟</span>
           <span>All Games</span>
         </button>
-        <button class="tab-button" data-game="memory">
+        <button class="tab-button" data-game="memory-game">
           <span style="font-size: 16px; margin-bottom: 2px;">🧠</span>
           <span>Memory</span>
         </button>
-        <button class="tab-button" data-game="reaction">
+        <button class="tab-button" data-game="reaction-game">
           <span style="font-size: 16px; margin-bottom: 2px;">⚡</span>
           <span>Reaction</span>
         </button>
@@ -84,10 +84,7 @@ const leaderboardModule = {
       if (this.currentGame === 'all') {
         const { data, error } = await window.supabase
           .from('leaderboard_scores')
-          .select(`
-            *,
-            user_profiles (username)
-          `)
+          .select('id, game_id, game_name, player_name, score, score_type, created_at')
           .order('score', { ascending: false })
           .limit(100);
 
@@ -96,11 +93,8 @@ const leaderboardModule = {
       } else {
         const { data, error } = await window.supabase
           .from('leaderboard_scores')
-          .select(`
-            *,
-            user_profiles (username)
-          `)
-          .eq('game_type', this.currentGame)
+          .select('id, game_id, game_name, player_name, score, score_type, created_at')
+          .eq('game_id', this.currentGame)
           .order('score', { ascending: false })
           .limit(100);
 
@@ -127,7 +121,7 @@ const leaderboardModule = {
             <div style="width: 60px; height: 60px; margin: 0 auto 12px; background: linear-gradient(135deg, #C0C0C0, #E8E8E8); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 8px 24px rgba(192,192,192,0.4);">🥈</div>
             <div style="background: linear-gradient(135deg, rgba(192,192,192,0.2), transparent); border: 2px solid rgba(192,192,192,0.5); border-radius: var(--radius-lg); padding: 16px 8px; min-height: 120px; display: flex; flex-direction: column; justify-content: center;">
               <div style="font-size: 32px; font-weight: 900; color: #C0C0C0; margin-bottom: 4px;">2</div>
-              <div style="font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--text-primary);">${topThree[1]?.user_profiles?.username || 'Anonymous'}</div>
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--text-primary);">${topThree[1]?.player_name || 'Anonymous'}</div>
               <div style="font-size: 18px; font-weight: 900; background: var(--gradient-teal); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${topThree[1]?.score.toLocaleString()}</div>
             </div>
           </div>
@@ -136,7 +130,7 @@ const leaderboardModule = {
             <div style="width: 80px; height: 80px; margin: 0 auto 12px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; border: 3px solid rgba(255,255,255,0.4); box-shadow: 0 12px 32px rgba(255,215,0,0.5); animation: pulse 2s ease-in-out infinite;">👑</div>
             <div style="background: linear-gradient(135deg, rgba(255,215,0,0.3), transparent); border: 2px solid rgba(255,215,0,0.6); border-radius: var(--radius-lg); padding: 20px 8px; min-height: 140px; display: flex; flex-direction: column; justify-content: center;">
               <div style="font-size: 40px; font-weight: 900; color: #FFD700; margin-bottom: 4px;">1</div>
-              <div style="font-size: 14px; font-weight: 800; margin-bottom: 4px; color: var(--text-primary);">${topThree[0]?.user_profiles?.username || 'Anonymous'}</div>
+              <div style="font-size: 14px; font-weight: 800; margin-bottom: 4px; color: var(--text-primary);">${topThree[0]?.player_name || 'Anonymous'}</div>
               <div style="font-size: 20px; font-weight: 900; background: var(--gradient-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${topThree[0]?.score.toLocaleString()}</div>
             </div>
           </div>
@@ -145,7 +139,7 @@ const leaderboardModule = {
             <div style="width: 60px; height: 60px; margin: 0 auto 12px; background: linear-gradient(135deg, #CD7F32, #8B4513); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 8px 24px rgba(205,127,50,0.4);">🥉</div>
             <div style="background: linear-gradient(135deg, rgba(205,127,50,0.2), transparent); border: 2px solid rgba(205,127,50,0.5); border-radius: var(--radius-lg); padding: 16px 8px; min-height: 110px; display: flex; flex-direction: column; justify-content: center;">
               <div style="font-size: 32px; font-weight: 900; color: #CD7F32; margin-bottom: 4px;">3</div>
-              <div style="font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--text-primary);">${topThree[2]?.user_profiles?.username || 'Anonymous'}</div>
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--text-primary);">${topThree[2]?.player_name || 'Anonymous'}</div>
               <div style="font-size: 18px; font-weight: 900; background: var(--gradient-teal); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${topThree[2]?.score.toLocaleString()}</div>
             </div>
           </div>
@@ -154,7 +148,7 @@ const leaderboardModule = {
 
       const restHTML = rest.map((entry, index) => {
         const rank = index + 4;
-        const username = entry.user_profiles?.username || 'Anonymous';
+        const username = entry.player_name || 'Anonymous';
 
         return `
           <div class="leaderboard-entry">
@@ -163,7 +157,7 @@ const leaderboardModule = {
             </div>
             <div class="entry-info">
               <div class="entry-username">${username}</div>
-              <div class="entry-game">${entry.game_type}</div>
+              <div class="entry-game">${entry.game_name || entry.game_id}</div>
             </div>
             <div class="entry-score">${entry.score.toLocaleString()}</div>
           </div>
