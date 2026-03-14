@@ -14,15 +14,8 @@ class ModuleRegistry {
       return false;
     }
 
-    this.modules.set(module.id, {
-      id: module.id,
-      name: module.name,
-      icon: module.icon || '📦',
-      type: module.type || 'tool',
-      description: module.description || '',
-      start: module.start,
-      stop: module.stop || (() => {})
-    });
+    // Store the entire module object to preserve all methods and context
+    this.modules.set(module.id, module);
 
     console.log(`Module registered: ${module.name}`);
     return true;
