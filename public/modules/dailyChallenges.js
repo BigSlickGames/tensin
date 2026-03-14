@@ -1,10 +1,10 @@
 const dailyChallengesModule = {
   id: 'daily-challenge',
-  name: 'Daily Challenges',
+  name: 'Challenges',
   icon: '🎯',
   type: 'tool',
   version: '1.0.0',
-  description: 'Complete daily challenges to earn rewards',
+  description: 'Complete challenges to earn rewards',
 
   async start(container) {
     const user = window.AuthManager.getCurrentUser();
@@ -24,13 +24,13 @@ const dailyChallengesModule = {
     const progressPercent = Math.min((currentLevelXP / xpNeeded) * 100, 100);
 
     const categories = [
-      { id: 'all', name: 'All', icon: '🎯' },
-      { id: 'daily', name: 'Daily', icon: '☀️' },
-      { id: 'weekly', name: 'Weekly', icon: '📅' },
-      { id: 'skill', name: 'Skill', icon: '🎮' },
-      { id: 'social', name: 'Social', icon: '👥' },
-      { id: 'competitive', name: 'Competitive', icon: '🏆' },
-      { id: 'progression', name: 'Progress', icon: '📈' }
+      { id: 'all', name: 'All' },
+      { id: 'daily', name: 'Daily' },
+      { id: 'weekly', name: 'Weekly' },
+      { id: 'skill', name: 'Skill' },
+      { id: 'social', name: 'Social' },
+      { id: 'competitive', name: 'Competitive' },
+      { id: 'progression', name: 'Progress' }
     ];
 
     const filteredChallenges = dailyChallengesModule.currentFilter === 'all'
@@ -42,28 +42,29 @@ const dailyChallengesModule = {
 
     container.innerHTML = `
       <div style="min-height: 100vh; background: var(--bg-primary);">
-        <div style="
-          position: relative;
-          background: url('/bd784273-048d-46b7-9ce9-6a2ee14880bf_(1).jpg') center/cover;
-          padding: 40px 20px;
-          border-bottom: 3px solid var(--border-glow);
-        ">
-          <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.8));"></div>
+        <div style="padding: 24px 20px; max-width: 1000px; margin: 0 auto;">
+          <div style="
+            position: relative;
+            background: url('/bd784273-048d-46b7-9ce9-6a2ee14880bf_(1).jpg') center/cover;
+            padding: 32px 24px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            overflow: hidden;
+          ">
+            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.8));"></div>
 
-          <div style="position: relative; max-width: 1000px; margin: 0 auto;">
-            <div style="text-align: center;">
-              <h1 style="font-size: 36px; font-weight: 900; color: white; margin-bottom: 8px; text-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-                🎯 Daily Challenges
+            <div style="position: relative; text-align: center;">
+              <h1 style="font-size: 32px; font-weight: 900; color: white; margin-bottom: 8px; text-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                Challenges
               </h1>
-              <p style="color: rgba(255,255,255,0.95); font-size: 16px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Complete challenges to earn XP and bankroll bonuses!</p>
-              <div style="margin-top: 16px; font-size: 18px; font-weight: 800; color: white;">
+              <p style="color: rgba(255,255,255,0.95); font-size: 15px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Complete challenges to earn XP and bankroll bonuses!</p>
+              <div style="margin-top: 12px; font-size: 17px; font-weight: 800; color: white;">
                 Level ${level} • ${completedCount}/${totalChallenges} Completed
               </div>
             </div>
           </div>
         </div>
 
-        <div style="padding: 24px 20px; max-width: 1000px; margin: 0 auto;">
           <div style="display: flex; gap: 8px; overflow-x: auto; padding: 8px 0; margin-bottom: 24px; -webkit-overflow-scrolling: touch;">
             ${categories.map(cat => `
               <button
@@ -85,7 +86,7 @@ const dailyChallengesModule = {
                 onmouseover="if(this.dataset.category !== '${dailyChallengesModule.currentFilter}') { this.style.background='var(--bg-tertiary)'; this.style.borderColor='var(--border-glow)'; }"
                 onmouseout="if(this.dataset.category !== '${dailyChallengesModule.currentFilter}') { this.style.background='var(--bg-secondary)'; this.style.borderColor='var(--border-subtle)'; }"
               >
-                ${cat.icon} ${cat.name}
+                ${cat.name}
               </button>
             `).join('')}
           </div>
@@ -574,37 +575,16 @@ const dailyChallengesModule = {
           </div>
         ` : ''}
 
-        <div style="display: flex; align-items: start; gap: 20px; margin-bottom: 16px;">
-          <div style="
-            width: 70px;
-            height: 70px;
-            background: ${challenge.color};
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-          ">
-            ${challenge.icon}
+        <div style="margin-bottom: 16px;">
+          <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
+            ${challenge.description}
           </div>
-
-          <div style="flex: 1;">
-            <div style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">
-              ${challenge.title}
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 14px; font-weight: 700; color: #22d3ee;">+${challenge.reward.xp} XP</span>
             </div>
-            <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
-              ${challenge.description}
-            </div>
-
-            <div style="display: flex; gap: 16px; align-items: center;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 14px; font-weight: 700; color: #22d3ee;">+${challenge.reward.xp} XP</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 14px; font-weight: 700; color: #fbbf24;">+${challenge.reward.bankroll}</span>
-              </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 14px; font-weight: 700; color: #fbbf24;">+${challenge.reward.bankroll}</span>
             </div>
           </div>
         </div>
