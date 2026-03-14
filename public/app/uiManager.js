@@ -230,7 +230,7 @@ class UIManager {
         </div>
         <div style="text-align: right;">
           <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Bankroll</div>
-          <div style="font-size: 24px; font-weight: 900; color: #d97706; text-shadow: 0 2px 8px rgba(0,0,0,0.4);">${bankroll.toLocaleString()}</div>
+          <div style="font-size: 24px; font-weight: 900; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.4);">${bankroll.toLocaleString()}</div>
         </div>
       </div>
 
