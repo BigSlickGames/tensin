@@ -268,13 +268,13 @@ window.ModuleRegistry.register({
       this.player.velocityY += this.gravity;
       this.player.y += this.player.velocityY;
 
-      if (this.player.y >= this.player.groundY) {
-        this.player.y = this.player.groundY;
+      if (this.player.y <= 0) {
+        this.player.y = 0;
         this.player.velocityY = 0;
         this.player.isJumping = false;
       }
     } else {
-      this.player.y = this.player.groundY;
+      this.player.y = 0;
     }
 
     // Spawn obstacles
@@ -342,7 +342,9 @@ window.ModuleRegistry.register({
 
   checkCollision(obstacle) {
     const playerHeight = this.player.isDucking ? this.player.height / 2 : this.player.height;
-    const playerY = this.player.isDucking ? this.player.groundY + this.player.height / 2 : this.player.groundY - this.player.y;
+    const playerY = this.player.isDucking
+      ? this.canvas.height - this.groundHeight - playerHeight
+      : this.canvas.height - this.groundHeight - this.player.height + this.player.y;
 
     return (
       this.player.x < obstacle.x + obstacle.width &&
@@ -382,7 +384,7 @@ window.ModuleRegistry.register({
     const playerHeight = this.player.isDucking ? this.player.height / 2 : this.player.height;
     const playerY = this.player.isDucking
       ? this.canvas.height - this.groundHeight - playerHeight
-      : this.canvas.height - this.groundHeight - this.player.height - this.player.y;
+      : this.canvas.height - this.groundHeight - this.player.height + this.player.y;
 
     this.ctx.fillStyle = '#1e293b';
     this.ctx.fillRect(this.player.x, playerY, this.player.width, playerHeight);
