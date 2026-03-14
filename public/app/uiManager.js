@@ -13,6 +13,9 @@ class UIManager {
     const root = document.getElementById('root');
     root.innerHTML = '';
 
+    const effectsLayer = this.createEffectsLayer();
+    root.appendChild(effectsLayer);
+
     const container = document.createElement('div');
     container.className = 'app-container';
 
@@ -53,6 +56,27 @@ class UIManager {
     container.appendChild(bottomNav);
 
     root.appendChild(container);
+  }
+
+  createEffectsLayer() {
+    const layer = document.createElement('div');
+    layer.className = 'effects-layer';
+
+    const shimmer = document.createElement('div');
+    shimmer.className = 'shimmer';
+    layer.appendChild(shimmer);
+
+    const depthGradient = document.createElement('div');
+    depthGradient.className = 'depth-gradient';
+    layer.appendChild(depthGradient);
+
+    for (let i = 0; i < 10; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      layer.appendChild(particle);
+    }
+
+    return layer;
   }
 
   createHeader() {
@@ -207,7 +231,7 @@ class UIManager {
         </div>
         <div style="text-align: right;">
           <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Bankroll</div>
-          <div style="font-size: 24px; font-weight: 900; color: #fbbf24;">${bankroll.toLocaleString()}</div>
+          <div style="font-size: 24px; font-weight: 900; color: #d97706; text-shadow: 0 2px 8px rgba(0,0,0,0.4);">${bankroll.toLocaleString()}</div>
         </div>
       </div>
 
@@ -256,13 +280,11 @@ class UIManager {
     carousel.style.cssText = 'margin: 0 0 20px 0; padding: 0 20px;';
 
     carousel.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
         <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin: 0;">Games & Apps</h3>
       </div>
-      <div id="games-carousel-container" style="position: relative;">
-        <div id="games-carousel" style="display: flex; gap: 16px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 12px; -webkit-overflow-scrolling: touch; scrollbar-width: thin;">
-          ${this.createGameCards()}
-        </div>
+      <div id="games-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+        ${this.createGameCards()}
       </div>
     `;
 
@@ -281,7 +303,6 @@ class UIManager {
       <div
         onclick="window.UIManager.launchModule('${game.id}')"
         style="
-          min-width: 140px;
           height: 160px;
           background: ${game.color};
           border-radius: var(--radius-lg);
@@ -296,8 +317,8 @@ class UIManager {
           justify-content: center;
           text-align: center;
         "
-        onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.3)';"
-        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';"
+        onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.3)';"
+        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';"
       >
         <div style="font-size: 48px; margin-bottom: 12px;">${game.emoji}</div>
         <div style="font-size: 14px; font-weight: 800; color: white; line-height: 1.3;">${game.name}</div>
