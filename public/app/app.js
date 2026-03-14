@@ -96,6 +96,6 @@ class App {
 
 window.App = new App();
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.App.init();
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.App.init();
 });
