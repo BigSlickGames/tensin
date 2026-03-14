@@ -4,7 +4,7 @@ const adminDashboard = {
   stats: {},
 
   async start(container) {
-    const { data: { user } } = await window.supabase.auth.getUser();
+    const { data: { user } } = await window.supabaseClientClient.auth.getUser();
     this.currentUser = user;
 
     await this.loadStats();
@@ -13,22 +13,22 @@ const adminDashboard = {
   },
 
   async loadStats() {
-    const { count: totalUsers } = await window.supabase
+    const { count: totalUsers } = await window.supabaseClientClient
       .from('user_profiles')
       .select('*', { count: 'exact', head: true });
 
-    const { count: activeToday } = await window.supabase
+    const { count: activeToday } = await window.supabaseClientClient
       .from('user_profiles')
       .select('*', { count: 'exact', head: true })
       .gte('last_login', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-    const { data: revenueData } = await window.supabase
+    const { data: revenueData } = await window.supabaseClientClient
       .from('revenue_tracking')
       .select('amount');
 
     const totalRevenue = revenueData?.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0) || 0;
 
-    const { data: challengeData } = await window.supabase
+    const { data: challengeData } = await window.supabaseClientClient
       .from('user_challenge_progress')
       .select('completed')
       .eq('completed', true);
@@ -699,7 +699,7 @@ const adminDashboard = {
     const logoutBtn = document.getElementById('admin-logout-btn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
-        await window.supabase.auth.signOut();
+        await window.supabaseClient.auth.signOut();
         window.location.reload();
       });
     }
@@ -728,7 +728,7 @@ const adminDashboard = {
     const container = document.getElementById('users-list-container');
     if (!container) return;
 
-    const { data: users, error } = await window.supabase
+    const { data: users, error } = await window.supabaseClient
       .from('user_profiles')
       .select('*')
       .order('created_at', { ascending: false })
@@ -790,7 +790,7 @@ const adminDashboard = {
     const container = document.getElementById('transactions-list');
     if (!container) return;
 
-    const { data: transactions, error } = await window.supabase
+    const { data: transactions, error } = await window.supabaseClient
       .from('revenue_tracking')
       .select('*')
       .order('created_at', { ascending: false })
@@ -831,7 +831,7 @@ const adminDashboard = {
           return;
         }
 
-        const { error } = await window.supabase
+        const { error } = await window.supabaseClient
           .from('revenue_tracking')
           .insert({
             transaction_type: type,
@@ -857,7 +857,7 @@ const adminDashboard = {
     const container = document.getElementById('activity-logs-list');
     if (!container) return;
 
-    const { data: logs, error } = await window.supabase
+    const { data: logs, error } = await window.supabaseClient
       .from('admin_activity_logs')
       .select('*')
       .order('created_at', { ascending: false })
@@ -892,7 +892,7 @@ const adminDashboard = {
     const container = document.getElementById('recent-activity-container');
     if (!container) return;
 
-    const { data: logs } = await window.supabase
+    const { data: logs } = await window.supabaseClient
       .from('admin_activity_logs')
       .select('*')
       .order('created_at', { ascending: false })

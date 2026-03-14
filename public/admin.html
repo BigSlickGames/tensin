@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tensins World - Admin Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <script>
+    window.ENV = {
+      VITE_SUPABASE_URL: 'https://ezenrsowgzktjkabvalm.supabase.co',
+      VITE_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZW5yc293Z3prdGprYWJ2YWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTIwNjcsImV4cCI6MjA4ODk4ODA2N30.rP_cpA-oNHiqFE13pYOf9v3LoRD7E_6JqfxVuVBe1D4'
+    };
+  </script>
+
   <link rel="stylesheet" href="/styles/master.css">
   <style>
     body {
@@ -39,26 +49,24 @@
   </div>
 
   <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+    const supabaseUrl = window.ENV.VITE_SUPABASE_URL;
+    const supabaseAnonKey = window.ENV.VITE_SUPABASE_ANON_KEY;
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-    window.supabase = createClient(supabaseUrl, supabaseAnonKey);
+    window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
     async function checkAdminAuth() {
-      const { data: { session } } = await window.supabase.auth.getSession();
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
 
       if (!session) {
         showLoginPage();
         return false;
       }
 
-      const { data: profile } = await window.supabase
+      const { data: profile } = await window.supabaseClient
         .from('user_profiles')
         .select('is_admin')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.is_admin) {
         showAccessDenied();
@@ -182,7 +190,7 @@
       const password = document.getElementById('admin-password').value;
       const errorDiv = document.getElementById('admin-error');
 
-      const { data, error } = await window.supabase.auth.signInWithPassword({
+      const { data, error } = await window.supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
@@ -193,16 +201,16 @@
         return;
       }
 
-      const { data: profile } = await window.supabase
+      const { data: profile } = await window.supabaseClient
         .from('user_profiles')
         .select('is_admin')
         .eq('id', data.user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile?.is_admin) {
         errorDiv.textContent = 'Access denied. Admin privileges required.';
         errorDiv.style.display = 'block';
-        await window.supabase.auth.signOut();
+        await window.supabaseClient.auth.signOut();
         return;
       }
 
@@ -247,16 +255,14 @@
       `;
     }
 
-    async function loadAdminDashboard() {
+    (async function loadAdminDashboard() {
       const isAdmin = await checkAdminAuth();
       if (!isAdmin) return;
 
       const { default: adminModule } = await import('/app/adminDashboard.js');
       const container = document.getElementById('admin-container');
       await adminModule.start(container);
-    }
-
-    loadAdminDashboard();
+    })();
   </script>
 </body>
 </html>
