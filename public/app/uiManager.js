@@ -56,6 +56,10 @@ class UIManager {
     moduleContainer.style.display = 'none';
     container.appendChild(moduleContainer);
 
+    // Bottom Navigation
+    const bottomNav = this.createBottomNav();
+    container.appendChild(bottomNav);
+
     root.appendChild(container);
   }
 
@@ -543,7 +547,7 @@ class UIManager {
               <div style="font-size: 20px;">🥉</div>
             </div>
           </div>
-          <button class="launch-button" style="width: 100%; margin-top: 16px;">View Full Leaderboard</button>
+          <button class="launch-button" style="width: 100%; margin-top: 16px;" onclick="window.UIManager.launchModule('leaderboard')">View Full Leaderboard</button>
         </div>
         <div style="background: var(--bg-tertiary); padding: 20px; border-radius: var(--radius-lg); border: 2px solid var(--border-glow); text-align: center;">
           <div style="font-size: 48px; margin-bottom: 12px;">👥</div>
@@ -553,6 +557,21 @@ class UIManager {
         </div>
       </div>
     `;
+  }
+
+  createBottomNav() {
+    const nav = document.createElement('div');
+    nav.className = 'bottom-nav';
+    nav.id = 'bottom-nav';
+
+    nav.innerHTML = `
+      <button class="nav-button" onclick="window.UIManager.launchModule('leaderboard')">
+        <img src="/icons/leaderboard.svg" alt="Leaderboard" class="nav-icon">
+        <span class="nav-label">Leaderboard</span>
+      </button>
+    `;
+
+    return nav;
   }
 
   showAdminPanel() {
