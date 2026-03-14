@@ -10,9 +10,12 @@ const authModule = {
   start: (container) => {
     const isAuthenticated = window.AuthManager.isAuthenticated();
     const currentUser = window.AuthManager.getCurrentUser();
+    const isTelegram = window.TelegramAdapter && window.TelegramAdapter.isAvailable;
 
     if (isAuthenticated) {
       renderProfile(container, currentUser);
+    } else if (isTelegram) {
+      renderTelegramAuth(container);
     } else {
       renderAuthForm(container);
     }
@@ -24,6 +27,56 @@ const authModule = {
 };
 
 window.ModuleRegistry.register(authModule);
+
+function renderTelegramAuth(container) {
+  const telegramUser = window.TelegramAdapter.getUser();
+
+  const html = `
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
+      <div style="width: 100%; max-width: 400px; background: #1f2937; border-radius: 16px; padding: 32px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🎮</div>
+        <h1 style="color: #f9fafb; font-size: 28px; font-weight: bold; margin: 0 0 8px 0;">Welcome ${telegramUser.first_name}!</h1>
+        <p style="color: #9ca3af; font-size: 14px; margin: 0 0 32px 0;">Continue with your Telegram account</p>
+
+        <div id="telegram-auth-error" style="display: none; padding: 12px; background: #7f1d1d; border: 1px solid #991b1b; border-radius: 8px; color: #fca5a5; font-size: 14px; margin-bottom: 16px; text-align: left;"></div>
+
+        <button id="telegram-login-btn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #0088cc 0%, #006699 100%); border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px rgba(0, 136, 204, 0.4);">
+          Continue with Telegram
+        </button>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+
+  const loginBtn = document.getElementById('telegram-login-btn');
+  const errorDiv = document.getElementById('telegram-auth-error');
+
+  loginBtn.addEventListener('click', async () => {
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Authenticating...';
+    errorDiv.style.display = 'none';
+
+    const result = await window.AuthManager.authenticateWithTelegram();
+
+    if (result.success) {
+      window.UIManager.showMenu();
+    } else {
+      errorDiv.textContent = result.error || 'Authentication failed. Please try again.';
+      errorDiv.style.display = 'block';
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Continue with Telegram';
+    }
+  });
+
+  loginBtn.addEventListener('mouseenter', () => {
+    loginBtn.style.transform = 'translateY(-2px)';
+  });
+
+  loginBtn.addEventListener('mouseleave', () => {
+    loginBtn.style.transform = 'translateY(0)';
+  });
+}
 
 function renderAuthForm(container) {
   const html = `

@@ -11,6 +11,8 @@ class AuthManager {
       const { data: { session } } = await this.supabase.auth.getSession();
       if (session) {
         await this.loadUserProfile(session.user.id);
+      } else if (window.TelegramAdapter && window.TelegramAdapter.isAvailable) {
+        await this.authenticateWithTelegram();
       }
 
       this.supabase.auth.onAuthStateChange((event, session) => {
@@ -59,6 +61,60 @@ class AuthManager {
         .eq('id', userId);
     } catch (err) {
       console.error('Error updating last login:', err);
+    }
+  }
+
+  async authenticateWithTelegram() {
+    try {
+      if (!window.TelegramAdapter || !window.TelegramAdapter.isAvailable) {
+        return { success: false, error: 'Telegram not available' };
+      }
+
+      const telegramUser = window.TelegramAdapter.getUser();
+      const webApp = window.TelegramAdapter.webApp;
+
+      if (!webApp || !webApp.initData) {
+        return { success: false, error: 'No Telegram init data' };
+      }
+
+      const initData = webApp.initDataUnsafe;
+      const telegramData = {
+        id: telegramUser.id,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        username: telegramUser.username,
+        auth_date: initData.auth_date,
+        hash: initData.hash
+      };
+
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/telegram-auth`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ telegramData })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Authentication failed');
+      }
+
+      if (result.session?.properties?.access_token) {
+        const { error } = await this.supabase.auth.setSession({
+          access_token: result.session.properties.access_token,
+          refresh_token: result.session.properties.refresh_token
+        });
+
+        if (error) throw error;
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Telegram auth error:', error);
+      return { success: false, error: error.message };
     }
   }
 
