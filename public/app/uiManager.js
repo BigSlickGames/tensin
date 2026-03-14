@@ -211,12 +211,24 @@ class UIManager {
     const banner = document.createElement('div');
     banner.className = 'hero-banner';
     banner.innerHTML = `
-      <button
-        onclick="window.UIManager.launchModule('auth')"
-        style="position: absolute; top: 16px; right: 16px; padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer; z-index: 10;"
-      >
-        Account
-      </button>
+      <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
+        ${user.is_admin ? `
+          <button
+            onclick="window.UIManager.launchModule('admin-dashboard')"
+            style="padding: 8px 16px; background: rgba(220, 38, 38, 0.8); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;"
+            onmouseover="this.style.background='rgba(220, 38, 38, 1)'"
+            onmouseout="this.style.background='rgba(220, 38, 38, 0.8)'"
+          >
+            Admin
+          </button>
+        ` : ''}
+        <button
+          onclick="window.UIManager.launchModule('auth')"
+          style="padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer;"
+        >
+          Account
+        </button>
+      </div>
 
       <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 20px;">
         <div style="width: 70px; height: 70px; background: var(--gradient-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; box-shadow: 0 8px 24px rgba(20, 184, 166, 0.4); border: 3px solid rgba(255, 255, 255, 0.2);">
