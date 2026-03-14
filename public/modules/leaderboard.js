@@ -176,8 +176,8 @@ const leaderboardModule = {
   }
 };
 
-const style = document.createElement('style');
-style.textContent = `
+const leaderboardStyle = document.createElement('style');
+leaderboardStyle.textContent = `
   .tab-button {
     background: var(--bg-card);
     backdrop-filter: blur(10px);
@@ -335,7 +335,7 @@ style.textContent = `
     }
   }
 `;
-document.head.appendChild(style);
+document.head.appendChild(leaderboardStyle);
 
 if (window.ModuleRegistry) {
   window.ModuleRegistry.register(leaderboardModule);

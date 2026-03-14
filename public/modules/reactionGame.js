@@ -97,7 +97,7 @@
     }, delay);
   }
 
-  function handleClick() {
+  async function handleClick() {
     if (isWaiting) {
       clearTimeout(timeout);
       isWaiting = false;
