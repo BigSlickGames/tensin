@@ -51,6 +51,7 @@ class App {
       '/modules/memoryGame.js',
       '/modules/leaderboard.js',
       '/modules/calculator.js',
+      '/modules/dinoRunner.js',
       '/modules/supabaseExample.js',
       '/modules/shareTest.js',
       '/modules/analyticsViewer.js',
