@@ -125,6 +125,13 @@
         window.Analytics.trackGameEnd('Reaction Test', currentTime, currentTime);
       }
 
+      const chips = window.ProgressionManager.calculateChipsForGame('reaction-game', currentTime, 'time');
+      const progressResult = await window.ProgressionManager.awardChips(chips, 'Reaction Test');
+
+      if (progressResult) {
+        window.ProgressionManager.showProgressNotification(progressResult);
+      }
+
       const isDailyChallenge = await checkAndSubmitDailyChallenge(currentTime);
 
       if (!isDailyChallenge && window.LeaderboardManager) {

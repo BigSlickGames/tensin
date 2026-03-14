@@ -40,6 +40,9 @@ class AuthManager {
         .maybeSingle();
 
       if (data) {
+        if (window.ProgressionManager) {
+          data.level = window.ProgressionManager.calculateLevel(data.experience || 0);
+        }
         this.currentUser = data;
         await this.updateLastLogin(userId);
       }
@@ -85,7 +88,6 @@ class AuthManager {
             username,
             first_name: firstName,
             last_name: lastName,
-            level: 1,
             experience: 0,
             bankroll: 1000,
             total_score: 0,

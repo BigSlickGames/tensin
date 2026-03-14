@@ -166,6 +166,13 @@
       window.Analytics.trackGameEnd('Memory Match', moves);
     }
 
+    const chips = window.ProgressionManager.calculateChipsForGame('memory-game', moves, 'moves');
+    const progressResult = await window.ProgressionManager.awardChips(chips, 'Memory Match');
+
+    if (progressResult) {
+      window.ProgressionManager.showProgressNotification(progressResult);
+    }
+
     const isDailyChallenge = await checkAndSubmitDailyChallenge(moves);
 
     if (!isDailyChallenge && window.LeaderboardManager) {

@@ -17,11 +17,10 @@ const dailyChallengesModule = {
     dailyChallengesModule.currentFilter = dailyChallengesModule.currentFilter || 'all';
 
     const experience = user.experience || 0;
-    const level = user.level || 1;
+    const level = window.ProgressionManager?.calculateLevel(experience) || 1;
     const bankroll = user.bankroll || 0;
-    const xpForCurrentLevel = (level - 1) * 100;
-    const currentLevelXP = experience - xpForCurrentLevel;
-    const xpNeeded = 100;
+    const currentLevelXP = window.ProgressionManager?.getXPForCurrentLevel(experience) || 0;
+    const xpNeeded = window.ProgressionManager?.getXPNeededForNextLevel(experience) || 100;
     const progressPercent = Math.min((currentLevelXP / xpNeeded) * 100, 100);
 
     const categories = [
