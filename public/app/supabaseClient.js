@@ -21,12 +21,12 @@ class SupabaseClient {
         return false;
       }
 
-      if (typeof supabase === 'undefined') {
+      if (typeof window.supabase === 'undefined') {
         console.warn('Supabase library not loaded - running in offline mode');
         return false;
       }
 
-      this.client = supabase.createClient(supabaseUrl, supabaseKey);
+      this.client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
       // Make client globally available
       window.supabase = this.client;
@@ -205,6 +205,10 @@ class SupabaseClient {
 
 window.SupabaseClient = new SupabaseClient();
 
-window.SupabaseClient.initialize().catch(err => {
-  console.warn('Supabase initialization error:', err);
-});
+(async () => {
+  try {
+    await window.SupabaseClient.initialize();
+  } catch (err) {
+    console.warn('Supabase initialization error:', err);
+  }
+})();
