@@ -1,14 +1,19 @@
-window.Modules = window.Modules || {};
-
-window.Modules.leaderboard = {
+const leaderboardModule = {
+  id: 'leaderboard',
   name: 'Leaderboard',
   description: 'Global rankings',
   icon: '🏆',
+  type: 'game',
+  container: null,
+  currentGame: 'all',
 
-  async render() {
-    const container = document.createElement('div');
-    container.className = 'game-container';
-    container.innerHTML = `
+  async start(container) {
+    this.container = container;
+    this.currentGame = 'all';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'game-container';
+    wrapper.innerHTML = `
       <div style="text-align: center; margin-bottom: 32px;">
         <h1 class="game-title" style="margin-bottom: 8px;">🏆 Global Leaderboard</h1>
         <p class="game-subtitle">Compete with the best players worldwide</p>
@@ -37,12 +42,14 @@ window.Modules.leaderboard = {
       </div>
     `;
 
-    this.container = container;
-    this.currentGame = 'all';
+    container.appendChild(wrapper);
     this.setupEventListeners();
     await this.loadLeaderboard();
+  },
 
-    return container;
+  stop() {
+    this.container = null;
+    this.currentGame = 'all';
   },
 
   setupEventListeners() {
@@ -329,3 +336,7 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
+if (window.ModuleRegistry) {
+  window.ModuleRegistry.register(leaderboardModule);
+}

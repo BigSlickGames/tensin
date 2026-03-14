@@ -47,9 +47,9 @@ class App {
   async loadModules() {
     const moduleScripts = [
       '/modules/auth.js',
-      '/modules/appStore.js',
       '/modules/reactionGame.js',
       '/modules/memoryGame.js',
+      '/modules/leaderboard.js',
       '/modules/supabaseExample.js',
       '/modules/shareTest.js',
       '/modules/analyticsViewer.js',
