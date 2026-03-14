@@ -72,7 +72,7 @@ class Analytics {
     return event;
   }
 
-  trackModuleStart(moduleId, moduleName) {
+  trackModuleLaunch(moduleId, moduleName) {
     this.currentModule = moduleId;
     this.moduleStartTime = Date.now();
 
@@ -80,6 +80,10 @@ class Analytics {
       moduleId: moduleId,
       moduleName: moduleName
     });
+  }
+
+  trackModuleStart(moduleId, moduleName) {
+    this.trackModuleLaunch(moduleId, moduleName);
   }
 
   trackModuleEnd(moduleId, moduleName) {

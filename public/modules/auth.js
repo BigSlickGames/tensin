@@ -1,4 +1,4 @@
-window.ModuleRegistry.register({
+const authModule = {
   id: 'auth',
   name: 'Account',
   icon: '👤',
@@ -7,7 +7,7 @@ window.ModuleRegistry.register({
   version: '1.0.0',
   author: 'System',
 
-  render: (container) => {
+  start: (container) => {
     const isAuthenticated = window.AuthManager.isAuthenticated();
     const currentUser = window.AuthManager.getCurrentUser();
 
@@ -16,8 +16,14 @@ window.ModuleRegistry.register({
     } else {
       renderAuthForm(container);
     }
+  },
+
+  stop: () => {
+    // Cleanup if needed
   }
-});
+};
+
+window.ModuleRegistry.register(authModule);
 
 function renderAuthForm(container) {
   const html = `

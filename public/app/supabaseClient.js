@@ -27,6 +27,7 @@ class SupabaseClient {
       }
 
       this.client = window.supabase.createClient(supabaseUrl, supabaseKey);
+      window.supabase = this.client;
       this.isAvailable = true;
 
       const { data, error } = await this.client
