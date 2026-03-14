@@ -39,13 +39,13 @@ class UIManager {
     const gamesCarousel = this.createGamesCarousel();
     menuContainer.appendChild(gamesCarousel);
 
+    // Daily Challenges Section
+    const challengesSection = this.createDailyChallengesSection();
+    menuContainer.appendChild(challengesSection);
+
     // User Sections
     this.createExpandableSection(menuContainer, 'Forum', 'purple', '', this.createForumContent());
     this.createExpandableSection(menuContainer, 'Socials', 'pink', '', this.createSocialsContent());
-
-    // Daily Challenges Button
-    const challengesButton = this.createChallengesButton();
-    menuContainer.appendChild(challengesButton);
 
     container.appendChild(menuContainer);
 
@@ -307,6 +307,104 @@ class UIManager {
         <div style="font-size: 14px; font-weight: 800; color: white; line-height: 1.3;">${game.name}</div>
       </div>
     `).join('');
+  }
+
+  createDailyChallengesSection() {
+    const section = document.createElement('div');
+    section.style.cssText = 'margin: 0 0 24px 0;';
+    section.id = 'daily-challenges-section';
+
+    section.innerHTML = `
+      <div style="padding: 0 20px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Daily Challenges</h3>
+        <div id="challenges-list" style="display: grid; gap: 12px;">
+          <div style="text-align: center; padding: 32px; color: var(--text-secondary);">
+            Loading challenges...
+          </div>
+        </div>
+      </div>
+    `;
+
+    setTimeout(() => this.loadDailyChallenges(), 100);
+    return section;
+  }
+
+  async loadDailyChallenges() {
+    const listContainer = document.getElementById('challenges-list');
+    if (!listContainer) return;
+
+    try {
+      const user = window.AuthManager.getCurrentUser();
+      if (!user) {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">Sign in to view challenges</div>';
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      const { data: progressData } = await window.SupabaseClient.client
+        .from('user_challenge_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('challenge_date', today);
+
+      const progressMap = new Map();
+      if (progressData) {
+        progressData.forEach(p => progressMap.set(p.challenge_id, p));
+      }
+
+      const challenges = [
+        { id: 'login', title: 'Daily Login', icon: '🎁', reward: '50 XP + 100', target: 1, progress: 1, completed: true },
+        { id: 'play-3', title: 'Play 3 Games', icon: '🎮', reward: '100 XP + 200', target: 3, progress: 0, completed: false },
+        { id: 'win-5', title: 'Win 5 Games', icon: '🏆', reward: '200 XP + 400', target: 5, progress: 0, completed: false }
+      ];
+
+      challenges.forEach(c => {
+        const userProgress = progressMap.get(c.id);
+        if (userProgress) {
+          c.progress = userProgress.progress;
+          c.completed = userProgress.completed;
+        }
+      });
+
+      listContainer.innerHTML = challenges.map(c => {
+        const progressPercent = Math.min((c.progress / c.target) * 100, 100);
+        return `
+          <div style="
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 2px solid ${c.completed ? '#10b981' : 'var(--border-glow)'};
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            ${c.completed ? 'opacity: 0.7;' : ''}
+          ">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <div style="font-size: 32px;">${c.icon}</div>
+              <div style="flex: 1;">
+                <div style="font-size: 16px; font-weight: 800; margin-bottom: 2px;">${c.title}</div>
+                <div style="font-size: 12px; color: #fbbf24; font-weight: 700;">${c.reward}</div>
+              </div>
+              ${c.completed ? '<div style="font-size: 32px;">✅</div>' : ''}
+            </div>
+            <div style="margin-bottom: 6px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-size: 11px; color: var(--text-tertiary); font-weight: 700;">Progress</span>
+                <span style="font-size: 11px; font-weight: 800;">${c.progress} / ${c.target}</span>
+              </div>
+              <div style="position: relative; height: 8px; background: rgba(0,0,0,0.3); border-radius: 999px; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); transition: width 0.5s ease;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (error) {
+      console.error('Error loading challenges:', error);
+      listContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--danger);">Failed to load challenges</div>';
+    }
   }
 
   createChallengesButton() {
