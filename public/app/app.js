@@ -11,6 +11,10 @@ class App {
 
     console.log('Initializing Mini App Hub...');
 
+    if (window.AuthManager) {
+      await window.AuthManager.initialize();
+    }
+
     await this.loadModules();
 
     if (window.AppStoreManager) {
@@ -27,16 +31,18 @@ class App {
 
     console.log('App initialized successfully');
 
-    const user = window.TelegramAdapter.getUser();
-    console.log(`Welcome, ${user.first_name}!`);
-
-    if (window.TelegramAdapter.isReady()) {
-      window.TelegramAdapter.setBackgroundColor('#1a1a1a');
+    if (window.AuthManager.isAuthenticated()) {
+      const user = window.AuthManager.getCurrentUser();
+      console.log(`Welcome back, ${user.username || user.first_name}!`);
+    } else {
+      console.log('Welcome! Please sign in to continue.');
+      window.UIManager.launchModule('auth');
     }
   }
 
   async loadModules() {
     const moduleScripts = [
+      '/modules/auth.js',
       '/modules/appStore.js',
       '/modules/reactionGame.js',
       '/modules/memoryGame.js',
@@ -76,7 +82,7 @@ class App {
   }
 
   getUser() {
-    return window.TelegramAdapter.getUser();
+    return window.AuthManager.getCurrentUser() || { first_name: 'Guest' };
   }
 
   showMenu() {
