@@ -264,11 +264,11 @@ window.ModuleRegistry.register({
     }
 
     // Update player physics
-    if (this.player.isJumping || this.player.y > 0) {
+    if (this.player.isJumping || this.player.y < 0) {
       this.player.velocityY += this.gravity;
       this.player.y += this.player.velocityY;
 
-      if (this.player.y <= 0) {
+      if (this.player.y >= 0) {
         this.player.y = 0;
         this.player.velocityY = 0;
         this.player.isJumping = false;
@@ -454,9 +454,10 @@ window.ModuleRegistry.register({
     const buildingOffset = (this.score * this.speed / 8) % 200;
 
     for (let i = -200; i < this.canvas.width + 200; i += 200) {
-      const x = i + buildingOffset;
+      const x = i - buildingOffset;
+      const buildingIndex = Math.floor((i + 1000) / 200);
       const heights = [80, 120, 100, 140];
-      const height = heights[Math.floor(Math.abs(x) / 200) % heights.length];
+      const height = heights[buildingIndex % heights.length];
 
       this.ctx.fillStyle = '#0a0f1f';
       this.ctx.fillRect(x, this.canvas.height - this.groundHeight - height, 80, height);
@@ -465,7 +466,8 @@ window.ModuleRegistry.register({
         for (let wy = 0; wy < Math.floor(height / 20); wy++) {
           const windowX = x + 10 + wx * 18;
           const windowY = this.canvas.height - this.groundHeight - height + 10 + wy * 20;
-          this.ctx.fillStyle = Math.random() > 0.3 ? '#fbbf24' : '#1e293b';
+          const windowSeed = buildingIndex * 100 + wx * 10 + wy;
+          this.ctx.fillStyle = (windowSeed % 10) < 7 ? '#fbbf24' : '#1e293b';
           this.ctx.fillRect(windowX, windowY, 12, 12);
         }
       }
