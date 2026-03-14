@@ -39,14 +39,6 @@ class UIManager {
     const gamesCarousel = this.createGamesCarousel();
     menuContainer.appendChild(gamesCarousel);
 
-    // Daily Challenges Button
-    const challengesButton = this.createChallengesButton();
-    menuContainer.appendChild(challengesButton);
-
-    // User Sections
-    this.createExpandableSection(menuContainer, 'Forum', 'purple', '', this.createForumContent());
-    this.createExpandableSection(menuContainer, 'Socials', 'pink', '', this.createSocialsContent());
-
     container.appendChild(menuContainer);
 
     // Module Container (hidden by default)
@@ -565,9 +557,17 @@ class UIManager {
     nav.id = 'bottom-nav';
 
     nav.innerHTML = `
+      <button class="nav-button" onclick="window.UIManager.launchModule('daily-challenge')">
+        <img src="/icons/challenges.svg" alt="Challenges" class="nav-icon">
+        <span class="nav-label">Challenges</span>
+      </button>
       <button class="nav-button" onclick="window.UIManager.launchModule('leaderboard')">
         <img src="/icons/leaderboard.svg" alt="Leaderboard" class="nav-icon">
         <span class="nav-label">Leaderboard</span>
+      </button>
+      <button class="nav-button" onclick="window.UIManager.launchModule('socials')">
+        <img src="/icons/socials.svg" alt="Social" class="nav-icon">
+        <span class="nav-label">Social</span>
       </button>
     `;
 
