@@ -21,15 +21,13 @@ class SupabaseClient {
         return false;
       }
 
-      if (typeof window.supabase === 'undefined') {
+      if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') {
         console.warn('Supabase library not loaded - running in offline mode');
         return false;
       }
 
       this.client = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-      // Make client globally available
-      window.supabase = this.client;
+      this.isAvailable = true;
 
       const { data, error } = await this.client
         .from('leaderboard')
@@ -204,11 +202,3 @@ class SupabaseClient {
 }
 
 window.SupabaseClient = new SupabaseClient();
-
-(async () => {
-  try {
-    await window.SupabaseClient.initialize();
-  } catch (err) {
-    console.warn('Supabase initialization error:', err);
-  }
-})();

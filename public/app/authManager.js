@@ -5,11 +5,8 @@ class AuthManager {
   }
 
   async initialize() {
-    const supabaseUrl = window.ENV?.VITE_SUPABASE_URL;
-    const supabaseKey = window.ENV?.VITE_SUPABASE_ANON_KEY;
-
-    if (supabaseUrl && supabaseKey && typeof window.supabase !== 'undefined') {
-      this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    if (window.SupabaseClient && window.SupabaseClient.isAvailable) {
+      this.supabase = window.SupabaseClient.client;
 
       const { data: { session } } = await this.supabase.auth.getSession();
       if (session) {

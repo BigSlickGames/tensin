@@ -11,6 +11,10 @@ class App {
 
     console.log('Initializing Mini App Hub...');
 
+    if (window.SupabaseClient) {
+      await window.SupabaseClient.initialize();
+    }
+
     if (window.AuthManager) {
       await window.AuthManager.initialize();
     }
