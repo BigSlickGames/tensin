@@ -88,6 +88,21 @@ function renderAuthForm(container) {
           <p style="color: #9ca3af; font-size: 14px; margin: 0;">Sign in to continue your gaming journey</p>
         </div>
 
+        <button id="google-signin-btn" style="width: 100%; padding: 14px; background: white; border: 1px solid #dadce0; border-radius: 8px; color: #3c4043; font-size: 16px; font-weight: 500; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
+            <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div style="text-align: center; margin: 20px 0; position: relative;">
+          <span style="color: #6b7280; background: #1f2937; padding: 0 12px; position: relative; z-index: 1;">or</span>
+          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #374151; z-index: 0;"></div>
+        </div>
+
         <div id="auth-tabs" style="display: flex; gap: 8px; margin-bottom: 24px; background: #111827; border-radius: 12px; padding: 4px;">
           <button id="signin-tab" class="auth-tab active" style="flex: 1; padding: 12px; border: none; background: #3b82f6; color: white; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
             Sign In
@@ -100,8 +115,8 @@ function renderAuthForm(container) {
         <div id="signin-form" class="auth-form">
           <form id="signin-form-element" style="display: flex; flex-direction: column; gap: 16px;">
             <div>
-              <label style="display: block; color: #f9fafb; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Username</label>
-              <input type="text" id="signin-username" required style="width: 100%; padding: 12px; background: #111827; border: 2px solid #374151; border-radius: 8px; color: #f9fafb; font-size: 14px; transition: border-color 0.2s;" placeholder="Enter your username">
+              <label style="display: block; color: #f9fafb; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Email</label>
+              <input type="email" id="signin-email" required style="width: 100%; padding: 12px; background: #111827; border: 2px solid #374151; border-radius: 8px; color: #f9fafb; font-size: 14px; transition: border-color 0.2s;" placeholder="Enter your email">
             </div>
             <div>
               <label style="display: block; color: #f9fafb; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Password</label>
@@ -116,6 +131,10 @@ function renderAuthForm(container) {
 
         <div id="signup-form" class="auth-form" style="display: none;">
           <form id="signup-form-element" style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <label style="display: block; color: #f9fafb; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Email</label>
+              <input type="email" id="signup-email" required style="width: 100%; padding: 12px; background: #111827; border: 2px solid #374151; border-radius: 8px; color: #f9fafb; font-size: 14px; transition: border-color 0.2s;" placeholder="Enter your email">
+            </div>
             <div>
               <label style="display: block; color: #f9fafb; font-size: 14px; font-weight: 500; margin-bottom: 8px;">Username</label>
               <input type="text" id="signup-username" required style="width: 100%; padding: 12px; background: #111827; border: 2px solid #374151; border-radius: 8px; color: #f9fafb; font-size: 14px; transition: border-color 0.2s;" placeholder="Choose a username">
@@ -167,9 +186,23 @@ function renderAuthForm(container) {
     signinForm.style.display = 'none';
   });
 
+  const googleSigninBtn = document.getElementById('google-signin-btn');
+  googleSigninBtn.addEventListener('click', async () => {
+    googleSigninBtn.disabled = true;
+    googleSigninBtn.textContent = 'Redirecting to Google...';
+
+    const result = await window.AuthManager.signInWithGoogle();
+
+    if (!result.success) {
+      googleSigninBtn.disabled = false;
+      googleSigninBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9.003 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z" fill="#FBBC05"/><path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.003 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/></svg>Continue with Google';
+      alert(result.error || 'Google sign in failed');
+    }
+  });
+
   document.getElementById('signin-form-element').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = document.getElementById('signin-username').value;
+    const email = document.getElementById('signin-email').value;
     const password = document.getElementById('signin-password').value;
     const errorDiv = document.getElementById('signin-error');
     const btn = document.getElementById('signin-btn');
@@ -178,7 +211,7 @@ function renderAuthForm(container) {
     btn.textContent = 'Signing in...';
     errorDiv.style.display = 'none';
 
-    const result = await window.AuthManager.signIn(username, password);
+    const result = await window.AuthManager.signInWithEmail(email, password);
 
     if (result.success) {
       window.UIManager.showMenu();
@@ -192,6 +225,7 @@ function renderAuthForm(container) {
 
   document.getElementById('signup-form-element').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const email = document.getElementById('signup-email').value;
     const username = document.getElementById('signup-username').value;
     const firstname = document.getElementById('signup-firstname').value;
     const lastname = document.getElementById('signup-lastname').value;
@@ -203,7 +237,7 @@ function renderAuthForm(container) {
     btn.textContent = 'Creating account...';
     errorDiv.style.display = 'none';
 
-    const result = await window.AuthManager.signUp(username, password, firstname, lastname);
+    const result = await window.AuthManager.signUpWithEmail(email, username, password, firstname, lastname);
 
     if (result.success) {
       window.UIManager.showMenu();

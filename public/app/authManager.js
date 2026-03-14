@@ -35,11 +35,53 @@ class AuthManager {
 
   async loadUserProfile(userId) {
     try {
-      const { data, error } = await this.supabase
+      let { data, error } = await this.supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
+
+      if (!data) {
+        const { data: { user } } = await this.supabase.auth.getUser();
+        if (user) {
+          const username = user.user_metadata?.username ||
+                          user.user_metadata?.preferred_username ||
+                          user.email?.split('@')[0] ||
+                          `user_${userId.substring(0, 8)}`;
+
+          const firstName = user.user_metadata?.first_name ||
+                           user.user_metadata?.given_name ||
+                           user.user_metadata?.name?.split(' ')[0] ||
+                           'User';
+
+          const lastName = user.user_metadata?.last_name ||
+                          user.user_metadata?.family_name ||
+                          user.user_metadata?.name?.split(' ').slice(1).join(' ') ||
+                          '';
+
+          const { data: newProfile, error: insertError } = await this.supabase
+            .from('user_profiles')
+            .insert({
+              id: userId,
+              username,
+              first_name: firstName,
+              last_name: lastName,
+              email: user.email,
+              experience: 0,
+              bankroll: 1000,
+              total_score: 0,
+              total_wins: 0,
+              rank: 0,
+              achievements: []
+            })
+            .select()
+            .single();
+
+          if (!insertError) {
+            data = newProfile;
+          }
+        }
+      }
 
       if (data) {
         if (window.ProgressionManager) {
@@ -118,10 +160,26 @@ class AuthManager {
     }
   }
 
-  async signUp(username, password, firstName, lastName = '') {
+  async signInWithGoogle() {
     try {
-      const email = `${username}@tensins.local`;
+      const { data, error } = await this.supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
 
+      if (error) throw error;
+
+      return { success: true };
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  async signUpWithEmail(email, username, password, firstName, lastName = '') {
+    try {
       const { data: authData, error: authError } = await this.supabase.auth.signUp({
         email,
         password,
@@ -144,6 +202,7 @@ class AuthManager {
             username,
             first_name: firstName,
             last_name: lastName,
+            email: email,
             experience: 0,
             bankroll: 1000,
             total_score: 0,
@@ -163,10 +222,8 @@ class AuthManager {
     }
   }
 
-  async signIn(username, password) {
+  async signInWithEmail(email, password) {
     try {
-      const email = `${username}@tensins.local`;
-
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email,
         password
@@ -182,6 +239,16 @@ class AuthManager {
       console.error('Sign in error:', error);
       return { success: false, error: error.message };
     }
+  }
+
+  async signUp(username, password, firstName, lastName = '') {
+    const email = `${username}@tensins.local`;
+    return this.signUpWithEmail(email, username, password, firstName, lastName);
+  }
+
+  async signIn(username, password) {
+    const email = `${username}@tensins.local`;
+    return this.signInWithEmail(email, password);
   }
 
   async signOut() {
