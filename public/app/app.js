@@ -50,6 +50,7 @@ class App {
       '/modules/reactionGame.js',
       '/modules/memoryGame.js',
       '/modules/leaderboard.js',
+      '/modules/calculator.js',
       '/modules/supabaseExample.js',
       '/modules/shareTest.js',
       '/modules/analyticsViewer.js',
