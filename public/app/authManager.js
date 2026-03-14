@@ -87,7 +87,7 @@ class AuthManager {
         hash: initData.hash
       };
 
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/telegram-auth`;
+      const apiUrl = `${window.ENV?.VITE_SUPABASE_URL}/functions/v1/telegram-auth`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
