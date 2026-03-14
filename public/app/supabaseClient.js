@@ -28,6 +28,9 @@ class SupabaseClient {
 
       this.client = supabase.createClient(supabaseUrl, supabaseKey);
 
+      // Make client globally available
+      window.supabase = this.client;
+
       const { data, error } = await this.client
         .from('leaderboard')
         .select('count')

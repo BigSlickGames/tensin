@@ -34,9 +34,11 @@ const dailyChallengesModule = {
   },
 
   async getChallenges() {
+    const user = window.AuthManager.getCurrentUser();
     const today = new Date().toISOString().split('T')[0];
 
-    return [
+    // Define all available challenges
+    const challengeTemplates = [
       {
         id: 'login',
         type: 'login',
@@ -45,9 +47,7 @@ const dailyChallengesModule = {
         icon: '🎁',
         reward: { xp: 50, bankroll: 100 },
         color: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-        progress: 1,
-        target: 1,
-        completed: true
+        target: 1
       },
       {
         id: 'play-3-games',
@@ -353,13 +353,37 @@ const dailyChallengesModule = {
 
   async claimReward(challengeId) {
     const user = window.AuthManager.getCurrentUser();
-    if (!user) return;
+    if (!user || !window.supabase) return;
 
     const challenges = await this.getChallenges();
     const challenge = challenges.find(c => c.id === challengeId);
 
-    if (!challenge) return;
+    if (!challenge || challenge.completed) return;
 
+    const today = new Date().toISOString().split('T')[0];
+
+    // Mark challenge as completed in database
+    const { error: progressError } = await window.supabase
+      .from('user_challenge_progress')
+      .upsert({
+        user_id: user.id,
+        challenge_id: challengeId,
+        progress: challenge.target,
+        target: challenge.target,
+        completed: true,
+        completed_at: new Date().toISOString(),
+        reset_at: today,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,challenge_id,reset_at'
+      });
+
+    if (progressError) {
+      console.error('Error updating challenge progress:', progressError);
+      return;
+    }
+
+    // Award XP and bankroll
     const newXP = (user.experience || 0) + challenge.reward.xp;
     const newBankroll = (user.bankroll || 0) + challenge.reward.bankroll;
 
@@ -367,7 +391,8 @@ const dailyChallengesModule = {
       .from('user_profiles')
       .update({
         experience: newXP,
-        bankroll: newBankroll
+        bankroll: newBankroll,
+        updated_at: new Date().toISOString()
       })
       .eq('id', user.id);
 
