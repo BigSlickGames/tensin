@@ -259,7 +259,7 @@ window.ModuleRegistry.register({
     this.scoreDisplay.textContent = Math.floor(this.score / 10);
 
     // Increase speed gradually
-    if (this.score % 500 === 0) {
+    if (this.score % 300 === 0) {
       this.speed += 0.5;
     }
 
@@ -323,17 +323,18 @@ window.ModuleRegistry.register({
       };
     } else {
       const heights = [
-        this.canvas.height - this.groundHeight - 140,
-        this.canvas.height - this.groundHeight - 110
+        this.canvas.height - this.groundHeight - 100,
+        this.canvas.height - this.groundHeight - 80
       ];
+      const chosenHeight = heights[Math.floor(Math.random() * heights.length)];
       obstacle = {
         type: 'light',
         x: this.canvas.width,
-        y: heights[Math.floor(Math.random() * heights.length)],
+        y: chosenHeight,
         width: 50,
         height: 35,
         color: '#fbbf24',
-        ropeLength: Math.abs(heights[Math.floor(Math.random() * heights.length)])
+        ropeLength: chosenHeight
       };
     }
 
@@ -451,27 +452,40 @@ window.ModuleRegistry.register({
   },
 
   drawBuildings() {
-    const buildingOffset = (this.score * this.speed / 8) % 200;
+    const groundY = this.canvas.height - this.groundHeight;
 
-    for (let i = -200; i < this.canvas.width + 200; i += 200) {
-      const x = i - buildingOffset;
-      const buildingIndex = Math.floor((i + 1000) / 200);
-      const heights = [80, 120, 100, 140];
-      const height = heights[buildingIndex % heights.length];
+    const buildings = [
+      { x: 50, width: 60, height: 140, windows: 6 },
+      { x: 120, width: 80, height: 180, windows: 8 },
+      { x: 210, width: 50, height: 120, windows: 5 },
+      { x: 270, width: 70, height: 200, windows: 9 },
+      { x: 350, width: 55, height: 100, windows: 4 },
+      { x: 415, width: 90, height: 220, windows: 10 },
+      { x: 515, width: 65, height: 150, windows: 7 },
+      { x: 590, width: 75, height: 170, windows: 8 },
+      { x: 675, width: 60, height: 130, windows: 6 },
+      { x: 745, width: 85, height: 190, windows: 9 },
+    ];
 
+    buildings.forEach((building, idx) => {
       this.ctx.fillStyle = '#0a0f1f';
-      this.ctx.fillRect(x, this.canvas.height - this.groundHeight - height, 80, height);
+      this.ctx.fillRect(building.x, groundY - building.height, building.width, building.height);
 
-      for (let wx = 0; wx < 4; wx++) {
-        for (let wy = 0; wy < Math.floor(height / 20); wy++) {
-          const windowX = x + 10 + wx * 18;
-          const windowY = this.canvas.height - this.groundHeight - height + 10 + wy * 20;
-          const windowSeed = buildingIndex * 100 + wx * 10 + wy;
-          this.ctx.fillStyle = (windowSeed % 10) < 7 ? '#fbbf24' : '#1e293b';
-          this.ctx.fillRect(windowX, windowY, 12, 12);
+      const windowWidth = 8;
+      const windowHeight = 10;
+      const windowPadding = 4;
+      const cols = Math.floor((building.width - windowPadding) / (windowWidth + windowPadding));
+
+      for (let row = 0; row < building.windows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const wx = building.x + windowPadding + col * (windowWidth + windowPadding);
+          const wy = groundY - building.height + 15 + row * (windowHeight + windowPadding);
+          const seed = idx * 100 + row * 10 + col;
+          this.ctx.fillStyle = (seed % 10) < 7 ? '#fbbf24' : '#1e293b';
+          this.ctx.fillRect(wx, wy, windowWidth, windowHeight);
         }
       }
-    }
+    });
   },
 
   async gameOver() {
