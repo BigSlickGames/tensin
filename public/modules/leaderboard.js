@@ -56,9 +56,10 @@ const leaderboardModule = {
     const tabs = this.container.querySelectorAll('.tab-button');
     tabs.forEach(tab => {
       tab.addEventListener('click', async (e) => {
+        const button = e.currentTarget;
         tabs.forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        this.currentGame = e.target.dataset.game;
+        button.classList.add('active');
+        this.currentGame = button.dataset.game;
         await this.loadLeaderboard();
       });
     });
@@ -68,10 +69,20 @@ const leaderboardModule = {
     const content = this.container.querySelector('#leaderboard-content');
 
     try {
+      if (!window.supabase) {
+        content.innerHTML = `
+          <div class="error-message">
+            <strong>Database not connected</strong>
+            <div class="error-details">Please check your connection and try again</div>
+          </div>
+        `;
+        return;
+      }
+
       let scores;
 
       if (this.currentGame === 'all') {
-        const { data, error } = await window.supabaseClient
+        const { data, error } = await window.supabase
           .from('leaderboard_scores')
           .select(`
             *,
@@ -83,7 +94,7 @@ const leaderboardModule = {
         if (error) throw error;
         scores = data;
       } else {
-        const { data, error } = await window.supabaseClient
+        const { data, error } = await window.supabase
           .from('leaderboard_scores')
           .select(`
             *,
