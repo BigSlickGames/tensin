@@ -190,30 +190,19 @@ class DailyChallengeManager {
   }
 
   getPlayerId() {
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-      return `telegram_${window.Telegram.WebApp.initDataUnsafe.user.id}`;
+    const currentUser = window.AuthManager?.getCurrentUser();
+    if (currentUser) {
+      return currentUser.id;
     }
-
-    let anonymousId = localStorage.getItem('anonymous_player_id');
-    if (!anonymousId) {
-      anonymousId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('anonymous_player_id', anonymousId);
-    }
-    return anonymousId;
+    return 'guest';
   }
 
   getPlayerName() {
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      return user.username || user.first_name || 'Telegram User';
+    const currentUser = window.AuthManager?.getCurrentUser();
+    if (currentUser) {
+      return currentUser.username || currentUser.first_name;
     }
-
-    let name = localStorage.getItem('anonymous_player_name');
-    if (!name) {
-      name = `Player${Math.floor(Math.random() * 9999)}`;
-      localStorage.setItem('anonymous_player_name', name);
-    }
-    return name;
+    return 'Guest';
   }
 
   getTimeUntilNextChallenge() {

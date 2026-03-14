@@ -193,10 +193,10 @@ class UIManager {
     banner.className = 'hero-banner';
     banner.innerHTML = `
       <button
-        onclick="window.AuthManager.signOut()"
+        onclick="window.UIManager.launchModule('auth')"
         style="position: absolute; top: 16px; right: 16px; padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer; z-index: 10;"
       >
-        Sign Out
+        Account
       </button>
 
       <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 20px;">

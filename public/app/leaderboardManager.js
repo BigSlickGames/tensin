@@ -5,27 +5,19 @@ class LeaderboardManager {
   }
 
   getUserInfo() {
-    let userId, playerName;
+    const currentUser = window.AuthManager?.getCurrentUser();
 
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      userId = `tg_${user.id}`;
-      playerName = user.first_name + (user.last_name ? ` ${user.last_name}` : '');
-    } else {
-      userId = localStorage.getItem('leaderboard_user_id');
-      if (!userId) {
-        userId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem('leaderboard_user_id', userId);
-      }
-
-      playerName = localStorage.getItem('leaderboard_player_name');
-      if (!playerName) {
-        playerName = `Player${Math.floor(Math.random() * 9999)}`;
-        localStorage.setItem('leaderboard_player_name', playerName);
-      }
+    if (currentUser) {
+      return {
+        userId: currentUser.id,
+        playerName: currentUser.username || currentUser.first_name
+      };
     }
 
-    return { userId, playerName };
+    return {
+      userId: 'guest',
+      playerName: 'Guest'
+    };
   }
 
   async submitScore(gameId, gameName, score, scoreType = 'points', metadata = {}) {

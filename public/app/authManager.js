@@ -172,6 +172,79 @@ class AuthManager {
       console.error('Error updating user stats:', err);
     }
   }
+
+  async updateBankroll(amount) {
+    if (!this.currentUser) return false;
+
+    try {
+      const newBankroll = this.currentUser.bankroll + amount;
+
+      if (newBankroll < 0) {
+        return false;
+      }
+
+      const { error } = await this.supabase
+        .from('user_profiles')
+        .update({
+          bankroll: newBankroll,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', this.currentUser.id);
+
+      if (!error) {
+        this.currentUser.bankroll = newBankroll;
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Error updating bankroll:', err);
+      return false;
+    }
+  }
+
+  async addExperience(amount) {
+    if (!this.currentUser) return;
+
+    try {
+      const newExperience = this.currentUser.experience + amount;
+      const oldLevel = this.currentUser.level;
+      const newLevel = Math.floor(newExperience / 1000) + 1;
+
+      const { error } = await this.supabase
+        .from('user_profiles')
+        .update({
+          experience: newExperience,
+          level: newLevel,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', this.currentUser.id);
+
+      if (!error) {
+        this.currentUser.experience = newExperience;
+        this.currentUser.level = newLevel;
+
+        if (newLevel > oldLevel) {
+          return { leveledUp: true, newLevel };
+        }
+      }
+      return { leveledUp: false };
+    } catch (err) {
+      console.error('Error adding experience:', err);
+      return { leveledUp: false };
+    }
+  }
+
+  getBankroll() {
+    return this.currentUser?.bankroll || 0;
+  }
+
+  getExperience() {
+    return this.currentUser?.experience || 0;
+  }
+
+  getLevel() {
+    return this.currentUser?.level || 1;
+  }
 }
 
 window.AuthManager = new AuthManager();
