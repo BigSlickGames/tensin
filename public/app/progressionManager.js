@@ -1,20 +1,39 @@
 window.ProgressionManager = {
   calculateLevel(experience) {
     if (experience === 0) return 1;
-    return Math.floor(experience / 100) + 1;
+
+    // Each level requires progressively more XP from 0
+    // Level 1: 100 XP, Level 2: 200 XP, Level 3: 300 XP, etc.
+    let totalXPNeeded = 0;
+    let level = 1;
+
+    while (true) {
+      totalXPNeeded += level * 100;
+      if (experience < totalXPNeeded) {
+        return level;
+      }
+      level++;
+    }
   },
 
   getXPRequiredForLevel(level) {
-    return level * 100;
+    // Total XP needed to reach this level from level 1
+    let total = 0;
+    for (let i = 1; i < level; i++) {
+      total += i * 100;
+    }
+    return total;
   },
 
   getXPForCurrentLevel(experience) {
+    // XP progress within current level (starts from 0 each level)
     const level = this.calculateLevel(experience);
-    const xpForPreviousLevel = (level - 1) * 100;
+    const xpForPreviousLevel = this.getXPRequiredForLevel(level);
     return experience - xpForPreviousLevel;
   },
 
   getXPNeededForNextLevel(experience) {
+    // XP needed to complete current level (increases per level)
     const level = this.calculateLevel(experience);
     return level * 100;
   },

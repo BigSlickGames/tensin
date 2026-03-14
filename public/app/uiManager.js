@@ -201,12 +201,11 @@ class UIManager {
     if (!user) return document.createElement('div');
 
     const experience = user.experience || 0;
-    const level = user.level || 1;
+    const level = window.ProgressionManager.calculateLevel(experience);
     const bankroll = user.bankroll || 0;
 
-    const xpForCurrentLevel = (level - 1) * 100;
-    const currentLevelXP = experience - xpForCurrentLevel;
-    const xpNeeded = 100;
+    const currentLevelXP = window.ProgressionManager.getXPForCurrentLevel(experience);
+    const xpNeeded = window.ProgressionManager.getXPNeededForNextLevel(experience);
     const progressPercent = Math.min((currentLevelXP / xpNeeded) * 100, 100);
 
     const banner = document.createElement('div');
