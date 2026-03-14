@@ -52,37 +52,14 @@ const dailyChallengesModule = {
           <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.8));"></div>
 
           <div style="position: relative; max-width: 1000px; margin: 0 auto;">
-            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
-              <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); border: 3px solid rgba(255, 255, 255, 0.4); color: white;">
-                ${user.first_name.charAt(0).toUpperCase()}
-              </div>
-              <div style="flex: 1; min-width: 200px;">
-                <div style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                  ${user.first_name} ${user.last_name || ''}
-                </div>
-                <div style="font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.9);">Level ${level} • ${bankroll.toLocaleString()} Bankroll</div>
-              </div>
-              <div style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border-radius: 12px; padding: 16px; border: 2px solid rgba(255, 255, 255, 0.2);">
-                <div style="font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 4px;">Challenges</div>
-                <div style="font-size: 24px; font-weight: 900; color: white; text-align: center;">${completedCount}/${totalChallenges}</div>
-              </div>
-            </div>
-
-            <div style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border-radius: 12px; padding: 16px; border: 2px solid rgba(255, 255, 255, 0.2); margin-bottom: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 0.5px;">XP Progress</span>
-                <span style="font-size: 13px; font-weight: 800; color: white;">${currentLevelXP} / ${xpNeeded}</span>
-              </div>
-              <div style="position: relative; height: 12px; background: rgba(0,0,0,0.4); border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
-                <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #fbbf24 0%, #fef3c7 50%, #fbbf24 100%); transition: width 0.5s ease; box-shadow: 0 0 16px rgba(251, 191, 36, 0.8);"></div>
-              </div>
-            </div>
-
             <div style="text-align: center;">
               <h1 style="font-size: 36px; font-weight: 900; color: white; margin-bottom: 8px; text-shadow: 0 4px 12px rgba(0,0,0,0.4);">
                 🎯 Daily Challenges
               </h1>
               <p style="color: rgba(255,255,255,0.95); font-size: 16px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Complete challenges to earn XP and bankroll bonuses!</p>
+              <div style="margin-top: 16px; font-size: 18px; font-weight: 800; color: white;">
+                Level ${level} • ${completedCount}/${totalChallenges} Completed
+              </div>
             </div>
           </div>
         </div>
