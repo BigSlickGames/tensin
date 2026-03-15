@@ -212,16 +212,6 @@ class UIManager {
     banner.className = 'hero-banner';
     banner.innerHTML = `
       <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
-        ${user.is_admin ? `
-          <button
-            onclick="window.UIManager.launchModule('admin-dashboard')"
-            style="padding: 8px 16px; background: rgba(220, 38, 38, 0.8); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;"
-            onmouseover="this.style.background='rgba(220, 38, 38, 1)'"
-            onmouseout="this.style.background='rgba(220, 38, 38, 0.8)'"
-          >
-            Admin
-          </button>
-        ` : ''}
         <button
           onclick="window.UIManager.launchModule('auth')"
           style="padding: 8px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 12px; cursor: pointer;"
