@@ -203,6 +203,7 @@ class AuthManager {
             first_name: firstName,
             last_name: lastName,
             email: email,
+            is_admin: false,
             experience: 0,
             bankroll: 1000,
             total_score: 0,
@@ -366,6 +367,17 @@ class AuthManager {
 
   getLevel() {
     return this.currentUser?.level || 1;
+  }
+
+  isAdmin() {
+    return this.currentUser?.is_admin === true && this.currentUser?.email === 'admin@tensin.com';
+  }
+
+  requireAdmin() {
+    if (!this.isAdmin()) {
+      throw new Error('Admin access required');
+    }
+    return true;
   }
 }
 

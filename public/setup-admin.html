@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Setup - Tensin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #1a202c;
+    }
+
+    p {
+      color: #718096;
+      margin-bottom: 30px;
+    }
+
+    .info-box {
+      background: #f7fafc;
+      border-left: 4px solid #4299e1;
+      padding: 15px;
+      margin-bottom: 30px;
+      border-radius: 4px;
+    }
+
+    .info-box strong {
+      display: block;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    .info-box div {
+      color: #4a5568;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+
+    #status.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+      display: block;
+    }
+
+    #status.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 1px solid #fc8181;
+      display: block;
+    }
+
+    #status.info {
+      background: #bee3f8;
+      color: #2c5282;
+      border: 1px solid #90cdf4;
+      display: block;
+    }
+
+    .warning {
+      background: #fef5e7;
+      border-left: 4px solid #f39c12;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #7d6608;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Account Setup</h1>
+    <p>Create the Tensin admin account with secure access.</p>
+
+    <div class="info-box">
+      <strong>Admin Credentials:</strong>
+      <div>
+        <strong>Email:</strong> admin@tensin.com<br>
+        <strong>Password:</strong> Tensin@6
+      </div>
+    </div>
+
+    <button id="setupBtn" onclick="setupAdmin()">Create Admin Account</button>
+
+    <div id="status"></div>
+
+    <div class="warning">
+      <strong>Security Notice:</strong> This is the ONLY account that will ever have admin privileges. Database triggers prevent any other account from becoming admin.
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabaseUrl = 'https://ezenrsowgzktjkabvalm.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZW5yc293Z3prdGprYWJ2YWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTIwNjcsImV4cCI6MjA4ODk4ODA2N30.rP_cpA-oNHiqFE13pYOf9v3LoRD7E_6JqfxVuVBe1D4';
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    window.setupAdmin = async function() {
+      const btn = document.getElementById('setupBtn');
+      const status = document.getElementById('status');
+
+      btn.disabled = true;
+      status.className = 'info';
+      status.textContent = 'Creating admin account...';
+
+      try {
+        const { data: existingProfile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('email', 'admin@tensin.com')
+          .maybeSingle();
+
+        if (existingProfile) {
+          status.className = 'success';
+          status.textContent = '✓ Admin account already exists! You can now log in with the credentials shown above.';
+          btn.textContent = 'Admin Account Ready';
+          return;
+        }
+
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: 'admin@tensin.com',
+          password: 'Tensin@6',
+          options: {
+            data: {
+              username: 'admin',
+              first_name: 'Admin',
+              last_name: 'Tensin'
+            }
+          }
+        });
+
+        if (authError) {
+          if (authError.message.includes('already registered')) {
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+              email: 'admin@tensin.com',
+              password: 'Tensin@6'
+            });
+
+            if (signInError) throw signInError;
+
+            const { error: profileError } = await supabase
+              .from('user_profiles')
+              .upsert({
+                id: signInData.user.id,
+                username: 'admin',
+                first_name: 'Admin',
+                last_name: 'Tensin',
+                email: 'admin@tensin.com',
+                is_admin: true,
+                experience: 0,
+                bankroll: 999999,
+                total_score: 0,
+                total_wins: 0,
+                rank: 0,
+                achievements: []
+              });
+
+            if (profileError) throw profileError;
+
+            await supabase.auth.signOut();
+
+            status.className = 'success';
+            status.textContent = '✓ Admin account updated successfully! You can now log in.';
+            btn.textContent = 'Admin Account Ready';
+            return;
+          }
+          throw authError;
+        }
+
+        if (authData.user) {
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .insert({
+              id: authData.user.id,
+              username: 'admin',
+              first_name: 'Admin',
+              last_name: 'Tensin',
+              email: 'admin@tensin.com',
+              is_admin: true,
+              experience: 0,
+              bankroll: 999999,
+              total_score: 0,
+              total_wins: 0,
+              rank: 0,
+              achievements: []
+            });
+
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+          }
+
+          await supabase.auth.signOut();
+
+          status.className = 'success';
+          status.textContent = '✓ Admin account created successfully! You can now log in with the credentials above.';
+          btn.textContent = 'Admin Account Ready';
+        }
+
+      } catch (error) {
+        console.error('Setup error:', error);
+        status.className = 'error';
+        status.textContent = `Error: ${error.message}`;
+        btn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>
